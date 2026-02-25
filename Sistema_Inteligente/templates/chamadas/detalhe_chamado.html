@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <a href="{% url 'lista_chamados' %}" style="text-decoration: none; color: #007bff;">⬅️ Voltar para a lista</a>
+    
+    <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 15px;">
+        Chamado #{{ chamado.id }}: {{ chamado.titulo }}
+    </h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+        <div>
+            <p><strong>Cliente:</strong> {{ chamado.cliente.nome }}</p>
+            <p><strong>Status:</strong> {{ chamado.get_status_display }}</p>
+        </div>
+        <div>
+            <p><strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
+            <p><strong>Aberto em:</strong> {{ chamado.data_criacao|date:"d/m/Y H:i" }}</p>
+        </div>
+    </div>
+
+    <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; border-left: 5px solid #007bff;">
+        <h4>📝 Descrição do Problema:</h4>
+        <p style="line-height: 1.6;">{{ chamado.descricao }}</p>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Atender Chamado</a>
+    </div>
+</div>
+{% endblock %}

@@ -53,10 +53,11 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',  
+    'django_otp.middleware.OTPMiddleware',  # Mantenha ele aqui, logo após o de Auth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 ROOT_URLCONF = 'SmartFlow_Sistema_Inteligente.urls'
 
 TEMPLATES = [
@@ -116,7 +117,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -129,5 +130,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = 'lista_clientes'
+LOGIN_REDIRECT_URL = 'dashboard' 
 LOGOUT_REDIRECT_URL = 'two_factor:login'
+
+#AUTHENTICATION_BACKENDS = (
+    #'two_factor.auth_backends.ModelBackend',
+    #'django.contrib.auth.backends.ModelBackend',)

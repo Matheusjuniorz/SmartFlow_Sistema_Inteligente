@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* Centraliza o container da autenticação */
+    .two-factor-container {
+        max-width: 450px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    .two-factor-container h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    /* Estilo do QR Code */
+    .two-factor-container img {
+        display: block;
+        margin: 20px auto;
+        max-width: 200px;
+        border: 10px solid white;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    /* Ajusta o formulário */
+    .two-factor-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Estilo do Botão (Padronizado com o SmartFlow) */
+    .two-factor-container button {
+        background-color: #ffc107; /* Amarelo SmartFlow */
+        color: #000;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background 0.3s;
+    }
+
+    .two-factor-container button:hover {
+        background-color: #e0a800;
+    }
+
+    /* Estilo para links de ajuda/voltar */
+    .two-factor-container a {
+        text-align: center;
+        display: block;
+        margin-top: 15px;
+        color: #6c757d;
+        text-decoration: none;
+    }
+</style>
+
+<div class="two-factor-container">
+    <h2>Segurança do Responsável</h2>
+    <p style="text-align: center; color: #666;">Use o Google Authenticator para prosseguir.</p>
+    <hr>
+
+    {% block two_factor_content %}
+    {% endblock %}
+</div>
+{% endblock %}

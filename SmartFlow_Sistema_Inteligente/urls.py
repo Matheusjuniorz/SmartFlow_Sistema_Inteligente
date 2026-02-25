@@ -42,6 +42,10 @@ urlpatterns = [
     path('account/', include((auth_patterns, 'two_factor'), namespace='two_factor')),
 
     # Suas rotas do Sistema SmartFlow
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('chamado/<int:chamado_id>/', views.detalhe_chamado, name='detalhe_chamado'),
+    path('chamado/excluir/<int:chamado_id>/', views.excluir_chamado, name='excluir_chamado'),
+    path('chamado/status/<int:chamado_id>/<str:novo_status>/', views.mudar_status, name='mudar_status'),
     path('clientes/', views.lista_clientes, name='lista_clientes'),
     path('clientes/novo/', views.criar_cliente, name='criar_cliente'),
     path('clientes/editar/<int:id>/', views.editar_cliente, name='editar_cliente'),

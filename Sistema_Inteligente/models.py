@@ -44,10 +44,25 @@ class Chamado(models.Model):
         default='media'
     )
     
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Selecione o Cliente")
+    descricao = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     descricao = models.TextField()
     responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     data_criacao = models.DateTimeField(auto_now_add=True)
 
+    status = models.CharField(
+    max_length=20,
+    choices=[
+        ('aberto', 'Aberto'),
+        ('em_andamento', 'Em Atendimento'),
+        ('finalizado', 'Finalizado'),
+        ('cancelado', 'Cancelado')
+    ],
+    default='aberto'
+)
+    
     def __str__(self):
         return self.titulo

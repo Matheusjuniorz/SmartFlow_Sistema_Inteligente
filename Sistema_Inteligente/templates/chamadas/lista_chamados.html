@@ -26,9 +26,17 @@
         .btn-novo { background-color: #ffc107; color: black; }
         .btn-voltar { background-color: #6c757d; color: white; margin-left: 10px; }
         
-        /* Botão de Logout */
+        .btn-dashboard { background-color: #007bff; color: white; margin-left: 10px; }
+        .btn-dashboard:hover { background-color: #0056b3; }
+
         .btn-sair { background-color: #ff4d4d; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-sair:hover { background-color: #cc0000; }
+
+        .btn-excluir { color: #d9534f; text-decoration: none; font-weight: bold; margin-left: 10px; }
+        .btn-excluir:hover { color: #c9302c; text-decoration: underline; }
+
+        .btn-detalhes { color: #007bff; text-decoration: none; font-weight: bold; }
+        .btn-detalhes:hover { text-decoration: underline; }
 
         .user-info { font-size: 14px; color: #555; margin-right: 15px; }
     </style>
@@ -52,6 +60,7 @@
     
     <div style="margin-bottom: 20px;">
         <a href="{% url 'criar_chamado' %}" class="btn btn-novo">+ Abrir Novo Chamado</a>
+        <a href="{% url 'dashboard' %}" class="btn btn-dashboard">📊 Ir para o Dashboard</a>
         <a href="{% url 'lista_clientes' %}" class="btn btn-voltar">Voltar para Clientes</a>
     </div>
 
@@ -73,7 +82,13 @@
                 <td>{{ chamado.descricao|truncatechars:50 }}</td>
                 <td>{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
                 <td>
-                    <a href="#">Ver Detalhes</a>
+                    <a href="{% url 'detalhe_chamado' chamado.id %}" class="btn-detalhes">🔍 Ver Detalhes</a> 
+                    | 
+                    <a href="{% url 'excluir_chamado' chamado.id %}" 
+                       class="btn-excluir" 
+                       onclick="return confirm('⚠️ Tem certeza que deseja excluir o chamado #{{ chamado.id }}?')">
+                       🗑️ Excluir
+                    </a>
                 </td>
             </tr>
             {% empty %}
