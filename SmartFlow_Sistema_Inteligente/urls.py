@@ -17,16 +17,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from Sistema_Inteligente import views 
-from django.contrib.auth.views import LogoutView # Importação necessária para o Logout
+from django.contrib.auth.views import LogoutView 
 from two_factor.views import (
     LoginView, SetupView, QRGeneratorView, SetupCompleteView, 
     BackupTokensView, ProfileView, DisableView
 )
+from django.conf import settings  
+from django.conf.urls.static import static
 
-# 1. Lista de URLs da autenticação incluindo o Logout
+
+# 1. Lista de URLs da autenticação
 auth_patterns = [
     path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'), # Rota de saída adicionada
+    path('logout/', LogoutView.as_view(), name='logout'),
     path('setup/', SetupView.as_view(), name='setup'),
     path('qrcode/', QRGeneratorView.as_view(), name='qr'),
     path('setup/complete/', SetupCompleteView.as_view(), name='setup_complete'),
@@ -38,19 +41,33 @@ auth_patterns = [
 urlpatterns = [
     path('admin/', admin.site.urls),
     
-    # 2. Incluindo as rotas manuais no namespace exigido pelo pacote
+    # 2. Autenticação Two-Factor
     path('account/', include((auth_patterns, 'two_factor'), namespace='two_factor')),
 
-    # Suas rotas do Sistema SmartFlow
+    # --- Suas rotas do Sistema SmartFlow ---
+    
+    # Dashboard e Filtros
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('chamado/<int:chamado_id>/', views.detalhe_chamado, name='detalhe_chamado'),
-    path('chamado/excluir/<int:chamado_id>/', views.excluir_chamado, name='excluir_chamado'),
-    path('chamado/status/<int:chamado_id>/<str:novo_status>/', views.mudar_status, name='mudar_status'),
+    
+    # Gestão de Chamados (Ajustadas para bater com seu HTML)
+    path('chamados/novo/', views.criar_chamado, name='criar_chamado'),
+    path('chamados/pdf/', views.gerar_pdf_chamados, name='gerar_pdf_chamados'),
+    path('chamados/', views.lista_chamados, name='lista_chamados'),
+    path('chamados/detalhe/<int:chamado_id>/', views.detalhe_chamado, name='detalhe_chamado'), 
+    path('chamados/finalizar/<int:chamado_id>/', views.finalizar_chamado, name='finalizar_chamado'),
+    path('chamados/excluir/<int:chamado_id>/', views.excluir_chamado, name='excluir_chamado'),
+    path('chamados/status/<int:chamado_id>/<str:novo_status>/', views.mudar_status, name='mudar_status'),
+    path('relatorios/', views.relatorio_chamados, name='relatorios'),
+
+    # Gestão de Clientes
     path('clientes/', views.lista_clientes, name='lista_clientes'),
     path('clientes/novo/', views.criar_cliente, name='criar_cliente'),
     path('clientes/editar/<int:id>/', views.editar_cliente, name='editar_cliente'),
     path('clientes/excluir/<int:id>/', views.excluir_cliente, name='excluir_cliente'),
-    path('chamados/novo/', views.criar_chamado, name='criar_chamado'),
-    path('chamados/', views.lista_chamados, name='lista_chamados'),
+    
+    # Usuários
     path('registrar/', views.registrar_responsavel, name='registrar_responsavel'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

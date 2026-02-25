@@ -1,10 +1,97 @@
+import os
+import calendar
+from datetime import datetime
 from django.shortcuts import redirect, get_object_or_404, render
 from django.contrib.auth.forms import UserCreationForm
-from .models import Cliente, Chamado
-from .forms import ClienteForm, ChamadoForm 
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.db.models import Count
+from django.db.models.functions import TruncMonth
+from django.http import HttpResponse
+from django.conf import settings
+from django.contrib.staticfiles.finders import find
 
+# ReportLab
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
+
+from .models import Cliente, Chamado
+from .forms import ClienteForm, ChamadoForm 
+
+# --- GERAÇÃO DE PDF ---
+
+@login_required
+def gerar_pdf_chamados(request):
+    dia = request.GET.get('dia')
+    mes = request.GET.get('mes')
+    ano = request.GET.get('ano')
+    
+    chamados = Chamado.objects.all().order_by('-data_criacao')
+
+    # Filtros de data
+    if dia and mes and ano:
+        data_inicio = datetime(int(ano), int(mes), int(dia), 0, 0, 0)
+        data_fim = datetime(int(ano), int(mes), int(dia), 23, 59, 59)
+        chamados = chamados.filter(data_criacao__range=(data_inicio, data_fim))
+    elif mes and ano:
+        ultimo_dia = calendar.monthrange(int(ano), int(mes))[1]
+        data_inicio = datetime(int(ano), int(mes), 1, 0, 0, 0)
+        data_fim = datetime(int(ano), int(mes), ultimo_dia, 23, 59, 59)
+        chamados = chamados.filter(data_criacao__range=(data_inicio, data_fim))
+    elif ano:
+        chamados = chamados.filter(data_criacao__year=ano)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="Relatorio_SmartFlow_{datetime.now().strftime("%d%m%Y")}.pdf"'
+
+    doc = SimpleDocTemplate(response, pagesize=A4, leftMargin=30, rightMargin=30, topMargin=30, bottomMargin=30)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # --- LOGO (Busca Segura) ---
+    logo_path = find('img/logo.png')
+    if not logo_path: # Tenta caminho manual se o find falhar
+        logo_path = os.path.join(settings.BASE_DIR, 'static', 'img', 'logo.png')
+
+    if os.path.exists(logo_path):
+        img = Image(logo_path, width=80, height=40)
+        img.hAlign = 'RIGHT' 
+        elements.append(img)
+    
+    elements.append(Paragraph("SmartFlow - Sistema de Gestão", styles['Title']))
+    elements.append(Paragraph("Relatório Técnico de Chamados", styles['Heading2']))
+    elements.append(Paragraph(f"Filtro aplicado: {dia if dia else '--'}/{mes if mes else '--'}/{ano if ano else '--'}", styles['Normal']))
+    elements.append(Paragraph(f"Data de emissão: {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles['Normal']))
+    elements.append(Spacer(1, 20))
+
+    # Tabela
+    dados = [['ID', 'Cliente', 'Data/Hora', 'Assunto', 'Status']]
+    for c in chamados:
+        dados.append([
+            f"#{c.id}",
+            c.cliente.nome[:20],
+            c.data_criacao.strftime('%d/%m/%Y %H:%M'),
+            c.descricao[:35] + '...' if len(c.descricao) > 35 else c.descricao,
+            c.status.upper()
+        ])
+
+    tabela = Table(dados, colWidths=[40, 110, 100, 200, 80])
+    tabela.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#343a40')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.lightgrey),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f2f2f2')])
+    ]))
+    elements.append(tabela)
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph(f"Total de registros encontrados: {chamados.count()}", styles['Italic']))
+
+    doc.build(elements)
+    return response
 
 def lista_clientes(request):
     termo_busca = request.GET.get('q', '')
@@ -57,10 +144,31 @@ def criar_chamado(request):
 
 @login_required 
 def lista_chamados(request):
-    chamados = Chamado.objects.all()
-    return render(request, 'chamadas/lista_chamados.html', {'chamados': chamados})
+    chamados = Chamado.objects.all().order_by('-data_criacao')
 
+    dia = request.GET.get('dia')
+    mes = request.GET.get('mes')
+    ano = request.GET.get('ano')
 
+    if dia and mes and ano:
+        data_inicio = datetime(int(ano), int(mes), int(dia), 0, 0, 0)
+        data_fim = datetime(int(ano), int(mes), int(dia), 23, 59, 59)
+        
+        chamados = chamados.filter(data_criacao__range=(data_inicio, data_fim))
+        
+    elif mes and ano:
+        ultimo_dia = calendar.monthrange(int(ano), int(mes))[1]
+        data_inicio = datetime(int(ano), int(mes), 1, 0, 0, 0)
+        data_fim = datetime(int(ano), int(mes), ultimo_dia, 23, 59, 59)
+        chamados = chamados.filter(data_criacao__range=(data_inicio, data_fim))
+    
+    elif ano:
+        chamados = chamados.filter(data_criacao__year=ano)
+
+    return render(request, 'chamadas/lista_chamados.html', {
+        'chamados': chamados,
+        'filtros': {'dia': dia, 'mes': mes, 'ano': ano}
+    })
 
 def registrar_responsavel(request):
     if request.method == 'POST':
@@ -74,23 +182,29 @@ def registrar_responsavel(request):
 
 @login_required
 def dashboard(request):
+    filtro_prioridade = request.GET.get('prioridade')
+
     total = Chamado.objects.count()
     alta = Chamado.objects.filter(prioridade='alta').count()
     media = Chamado.objects.filter(prioridade='media').count()
     baixa = Chamado.objects.filter(prioridade='baixa').count()
 
-
-    lista_de_atividades = Chamado.objects.all().order_by('-data_criacao')[:10]
+    if filtro_prioridade:
+        lista_atividades = Chamado.objects.filter(prioridade=filtro_prioridade).order_by('-data_criacao')
+    else:
+        lista_atividades = Chamado.objects.all().order_by('-data_criacao')[:10]
 
     context = {
         'total': total,
         'alta': alta,
         'media': media,
         'baixa': baixa,
-        'chamados': lista_de_atividades, 
+        'chamados': lista_atividades,
+        'filtro_ativo': filtro_prioridade, 
     }
-
     return render(request, 'chamadas/dashboard.html', context)
+
+
 @login_required
 def mudar_status(request, chamado_id, novo_status):
     chamado = get_object_or_404(Chamado, id=chamado_id)
@@ -113,19 +227,61 @@ def detalhe_chamado(request, chamado_id):
 
 def criar_chamado(request):
     if request.method == 'POST':
-        cliente_id = request.POST.get('cliente')
-        descricao = request.POST.get('descricao')
-        
-        cliente = Cliente.objects.get(id=cliente_id)
+        # ... sua lógica de salvar ...
+        return redirect('dashboard')
+    
+    clientes = Cliente.objects.all()
+    return render(request, 'chamadas/criar_chamado.html', {'clientes': clientes})
         
 
-        Chamado.objects.create(
+    Chamado.objects.create(
             cliente=cliente, 
             descricao=descricao,
             responsavel=request.user 
         )
         
-        return redirect('lista_chamados')
+    return redirect('lista_chamados')
 
     clientes = Cliente.objects.all()
     return render(request, 'criar_chamado.html', {'clientes': clientes})
+
+
+def detalhe_chamado(request, chamado_id):
+    chamado = get_object_or_404(Chamado, id=chamado_id)
+    return render(request, 'chamadas/detalhe_chamado.html', {'chamado': chamado})
+
+
+def finalizar_chamado(request, chamado_id):
+    chamado = get_object_or_404(Chamado, id=chamado_id)
+    
+    if request.method == 'POST':
+        solucao_tecnica = request.POST.get('solucao')
+        
+        chamado.solucao = solucao_tecnica
+        chamado.status = 'finalizado'
+        chamado.data_finalizacao = timezone.now()
+        chamado.save()
+        
+        return redirect('dashboard')
+        
+    return render(request, 'chamadas/encerrar_chamado.html', {'chamado': chamado})
+
+
+def relatorio_chamados(request):
+    relatorio_mensal = (
+        Chamado.objects.annotate(mes=TruncMonth('data_criacao'))
+        .values('mes')
+        .annotate(total=Count('id'))
+        .order_by('-mes')
+    )
+    
+    estatisticas_clientes = (
+        Chamado.objects.values('cliente__nome')
+        .annotate(total=Count('id'))
+        .order_by('-total')[:5] 
+    )
+
+    return render(request, 'chamadas/relatorio.html', {
+        'relatorio_mensal': relatorio_mensal,
+        'estatisticas_clientes': estatisticas_clientes
+    })

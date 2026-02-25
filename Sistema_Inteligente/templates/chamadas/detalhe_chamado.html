@@ -1,31 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-    <a href="{% url 'lista_chamados' %}" style="text-decoration: none; color: #007bff;">⬅️ Voltar para a lista</a>
+<div style="max-width: 800px; margin: 30px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); font-family: sans-serif;">
     
-    <h2 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 15px;">
-        Chamado #{{ chamado.id }}: {{ chamado.titulo }}
-    </h2>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #333;">📋 Chamado #{{ chamado.id }}</h2>
+        <span style="padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 13px;
+            {% if chamado.status == 'aberto' %} background: #cfe2ff; color: #084298;
+            {% elif chamado.status == 'atendimento' %} background: #fff3cd; color: #856404;
+            {% else %} background: #d1e7dd; color: #0f5132; {% endif %}">
+            {{ chamado.get_status_display }}
+        </span>
+    </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
         <div>
-            <p><strong>Cliente:</strong> {{ chamado.cliente.nome }}</p>
-            <p><strong>Status:</strong> {{ chamado.get_status_display }}</p>
+            <p><strong>👤 Cliente:</strong> {{ chamado.cliente.nome }}</p>
+            <p><strong>🛠️ Responsável:</strong> {{ chamado.responsavel.username }}</p>
         </div>
         <div>
-            <p><strong>Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
-            <p><strong>Aberto em:</strong> {{ chamado.data_criacao|date:"d/m/Y H:i" }}</p>
+            <p><strong>📅 Criado em:</strong> {{ chamado.data_criacao|date:"d/m/Y H:i" }}</p>
+            <p><strong>🚨 Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
         </div>
     </div>
 
-    <div style="background: #f9f9f9; padding: 20px; border-radius: 5px; border-left: 5px solid #007bff;">
-        <h4>📝 Descrição do Problema:</h4>
-        <p style="line-height: 1.6;">{{ chamado.descricao }}</p>
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #007bff;">
+        <h4 style="margin-top: 0; color: #007bff;">📝 Descrição do Problema</h4>
+        <p style="line-height: 1.6; color: #444; white-space: pre-wrap;">{{ chamado.descricao }}</p>
     </div>
 
-    <div style="margin-top: 30px;">
-        <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">Atender Chamado</a>
+    {% if chamado.solucao %}
+    <div style="background: #e6fffa; padding: 20px; border-radius: 8px; margin-bottom: 25px; border-left: 4px solid #28a745;">
+        <h4 style="margin-top: 0; color: #28a745;">✅ Solução Aplicada</h4>
+        <p style="line-height: 1.6; color: #1a535c; white-space: pre-wrap;">{{ chamado.solucao }}</p>
+        <small>Finalizado em: {{ chamado.data_finalizacao|date:"d/m/Y H:i" }}</small>
+    </div>
+    {% endif %}
+
+    <div style="display: flex; gap: 10px; margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">⬅️ Voltar ao Dashboard</a>
+        
+        {% if chamado.status != 'finalizado' %}
+            <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">Atender</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

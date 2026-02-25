@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding: 20px; font-family: sans-serif;">
+    <h2 style="color: #333; margin-bottom: 25px;">📊 Relatórios de Desempenho</h2>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h3 style="color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 10px;">📅 Volume Mensal</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 2px solid #eee;">
+                        <th style="padding: 10px;">Mês/Ano</th>
+                        <th style="padding: 10px;">Total de Chamados</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in relatorio_mensal %}
+                    <tr style="border-bottom: 1px solid #f9f9f9;">
+                        <td style="padding: 10px;">{{ item.mes|date:"F Y" }}</td>
+                        <td style="padding: 10px; font-weight: bold;">{{ item.total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h3 style="color: #28a745; border-bottom: 2px solid #eee; padding-bottom: 10px;">🏆 Top 5 Clientes (Mais Chamados)</h3>
+            <ul style="list-style: none; padding: 0; margin-top: 15px;">
+                {% for cliente in estatisticas_clientes %}
+                <li style="padding: 12px; border-bottom: 1px solid #f9f9f9; display: flex; justify-content: space-between;">
+                    <span>{{ cliente.cliente__nome }}</span>
+                    <span style="background: #e6fffa; color: #28a745; padding: 2px 10px; border-radius: 12px; font-weight: bold;">
+                        {{ cliente.total }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'dashboard' %}" style="text-decoration: none; color: #666; font-weight: bold;">⬅️ Voltar ao Dashboard</a>
+    </div>
+</div>
+{% endblock %}
