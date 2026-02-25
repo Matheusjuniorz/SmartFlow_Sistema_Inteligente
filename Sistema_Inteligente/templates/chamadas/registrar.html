@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Responsável</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .register-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { text-align: center; color: #333; }
+        .btn-registrar { width: 100%; background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .login-link { display: block; text-align: center; margin-top: 15px; color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Novo Responsável</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-registrar">Criar Conta</button>
+        </form>
+        <a href="{% url 'two_factor:login' %}" class="login-link">Já tenho conta (Fazer Login)</a>
+    </div>
+</body>
+</html>

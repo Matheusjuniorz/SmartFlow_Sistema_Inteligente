@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Clientes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { background-color: #f2f2f2; text-align: left; }
+        .mensagem-erro { color: red; font-weight: bold; text-align: center; padding: 20px; }
+        .busca-container { margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+        input[type="text"] { padding: 8px; width: 250px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        /* Cores dos botões */
+        .btn { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block; }
+        .btn-filtrar { background-color: #007bff; color: white; }
+        .btn-cliente { background-color: #28a745; color: white; }
+        .btn-chamado { background-color: #ffc107; color: black; margin-left: 10px; }
+        .btn-link { background-color: #17a2b8; color: white; margin-left: 10px; }
+        
+        .btn-limpar { margin-left: 10px; color: #666; text-decoration: none; font-size: 14px; }
+        .btn-limpar:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciamento de Clientes</h1>
+    
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'criar_cliente' %}" class="btn btn-cliente">+ Novo Cliente</a>
+        
+        <a href="{% url 'criar_chamado' %}" class="btn btn-chamado">+ Abrir Chamado</a>
+        
+        <a href="{% url 'lista_chamados' %}" class="btn btn-link">Ver Todos os Chamados</a>
+    </div>
+
+    <hr>
+
+    <div class="busca-container">
+        <form method="GET" action="{% url 'lista_clientes' %}">
+            <input type="text" 
+                   name="q" 
+                   placeholder="Buscar cliente por nome..." 
+                   value="{{ termo_busca|default:'' }}">
+            
+            <button type="submit" class="btn btn-filtrar">Filtrar</button>
+
+            {% if termo_busca %}
+                <a href="{% url 'lista_clientes' %}" class="btn-limpar">Limpar busca</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <table border="1" cellpadding="10">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>Telefone</th>
+                <th>Ações</th> 
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.nome }}</td>
+                <td>{{ cliente.email }}</td>
+                <td>{{ cliente.telefone }}</td>
+                <td>
+                    <a href="{% url 'editar_cliente' cliente.id %}">Editar</a> | 
+                    <a href="{% url 'excluir_cliente' cliente.id %}" 
+                       style="color: red;" 
+                       onclick="return confirm('Tem certeza que deseja excluir {{ cliente.nome }}?')">
+                       Excluir
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="mensagem-erro">
+                    {% if termo_busca %}
+                        Nenhum cliente encontrado para: "{{ termo_busca }}"
+                    {% else %}
+                        Nenhum cliente cadastrado no sistema.
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if termo_busca and clientes %}
+        <p><em>Exibindo {{ clientes|length }} resultado(s) para sua busca.</em></p>
+    {% endif %}
+
+</body>
+</html>

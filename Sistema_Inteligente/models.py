@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Cliente(models.Model):  
     nome = models.CharField(max_length=100)
@@ -32,3 +34,20 @@ class Chamado(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.cliente.nome}"
+
+
+class Chamado(models.Model):
+    titulo = models.CharField(max_length=200, verbose_name="Título")
+    prioridade = models.CharField(
+        max_length=10, 
+        choices=[('baixa', 'Baixa'), ('media', 'Média'), ('alta', 'Alta')],
+        default='media'
+    )
+    
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    descricao = models.TextField()
+    responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.titulo

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Chamado</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-container { max-width: 600px; background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+        .btn-salvar { background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-cancelar { color: #666; text-decoration: none; margin-left: 15px; }
+    </style>
+</head>
+<body>
+
+    <h1>Abrir Novo Chamado</h1>
+
+    <div class="form-container">
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div style="color: red;">
+                    <strong>Erro ao salvar:</strong> Verifique os campos abaixo.
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+            
+            <br>
+            <button type="submit" class="btn-salvar">Salvar Chamado</button>
+            <a href="{% url 'lista_chamados' %}" class="btn-cancelar">Cancelar</a>
+        </form>
+    </div>
+
+</body>
+</html>
