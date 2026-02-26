@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Lista de Chamados - SmartFlow</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
@@ -37,13 +38,18 @@
         .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
 
         /* Estilos dos Botões */
-        .btn { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px; }
+        .btn { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px; transition: 0.3s; }
         .btn-novo { background-color: #28a745; color: white; }
         .btn-voltar { background-color: #6c757d; color: white; margin-left: 10px; }
         .btn-dashboard { background-color: #007bff; color: white; margin-left: 10px; }
         .btn-filtrar { background-color: #343a40; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn-pdf { background-color: #d9534f; color: white; margin-left: 5px; }
+        
+        /* Botões de PDF */
+        .btn-pdf { background-color: #d9534f; color: white; margin-left: 5px; } /* Relatório Geral */
+        .btn-os { background-color: #17a2b8; color: white; font-size: 12px; padding: 5px 10px; } /* Botão O.S. */
+        
         .btn-pdf:hover { background-color: #c9302c; }
+        .btn-os:hover { background-color: #138496; }
         
         .btn-sair { background-color: #ff4d4d; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-excluir { color: #d9534f; text-decoration: none; font-weight: bold; margin-left: 10px; }
@@ -105,7 +111,9 @@
         
         <button type="submit" class="btn-filtrar">🔍 Filtrar</button>
         
-        <button type="button" class="btn btn-pdf" onclick="gerarPDF()">📄 Gerar PDF</button>
+        <button type="button" class="btn btn-pdf" onclick="gerarPDF()">
+            <i class="fas fa-file-contract"></i> Relatório Geral
+        </button>
         
         <a href="{% url 'lista_chamados' %}" style="text-decoration: none; color: #666; font-size: 12px; margin-bottom: 8px;">Limpar Filtros</a>
     </form>
@@ -117,7 +125,7 @@
                 <th>Cliente</th>
                 <th>Descrição/Assunto</th>
                 <th>Data de Abertura</th>
-                <th>Ações</th> 
+                <th style="text-align: center;">Ações / Documentos</th> 
             </tr>
         </thead>
         <tbody>
@@ -127,23 +135,24 @@
                 <td><strong>{{ chamado.cliente.nome }}</strong></td>
                 <td>{{ chamado.descricao|truncatechars:50 }}</td>
                 <td>{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
-                <td>
-                    <a href="{% url 'detalhe_chamado' chamado.id %}" class="btn-detalhes">🔍 Ver Detalhes</a> 
+                <td style="text-align: center;">
+                    <a href="{% url 'gerar_os_pdf' chamado.id %}" class="btn btn-os">
+                        <i class="fas fa-print"></i> Gerar O.S.
+                    </a>
+                    |
+                    <a href="{% url 'detalhe_chamado' chamado.id %}" class="btn-detalhes">🔍 Detalhes</a> 
                     | 
                     <a href="{% url 'excluir_chamado' chamado.id %}" 
                        class="btn-excluir" 
                        onclick="return confirm('⚠️ Tem certeza que deseja excluir o chamado #{{ chamado.id }}?')">
-                       🗑️ Excluir
+                        🗑️ Excluir
                     </a>
                 </td>
             </tr>
             {% empty %}
             <tr>
                 <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
-                    Nenhum chamado encontrado para o período: 
-                    {% if filtros.dia %}{{ filtros.dia }}/{% endif %}
-                    {% if filtros.mes %}{{ filtros.mes }}/{% endif %}
-                    {% if filtros.ano %}{{ filtros.ano }}{% endif %}
+                    Nenhum chamado encontrado.
                 </td>
             </tr>
             {% endfor %}
@@ -156,18 +165,15 @@
 
     <script>
         function gerarPDF() {
-            // Captura os valores atuais que o usuário digitou/selecionou
             const dia = document.querySelector('input[name="dia"]').value;
             const mes = document.querySelector('select[name="mes"]').value;
             const ano = document.querySelector('input[name="ano"]').value;
             
-            // Constrói a URL para a view de PDF passando os mesmos filtros
             let url = "{% url 'gerar_pdf_chamados' %}?";
             url += "dia=" + encodeURIComponent(dia);
             url += "&mes=" + encodeURIComponent(mes);
             url += "&ano=" + encodeURIComponent(ano);
             
-            // Abre o PDF em uma nova aba ou inicia download
             window.location.href = url;
         }
     </script>

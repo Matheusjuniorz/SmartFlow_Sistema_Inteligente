@@ -64,6 +64,7 @@ urlpatterns = [
     path('clientes/novo/', views.criar_cliente, name='criar_cliente'),
     path('clientes/editar/<int:id>/', views.editar_cliente, name='editar_cliente'),
     path('clientes/excluir/<int:id>/', views.excluir_cliente, name='excluir_cliente'),
+    path('chamados/os/<int:chamado_id>/', views.gerar_os_pdf, name='gerar_os_pdf'),
     
     # Usuários
     path('registrar/', views.registrar_responsavel, name='registrar_responsavel'),

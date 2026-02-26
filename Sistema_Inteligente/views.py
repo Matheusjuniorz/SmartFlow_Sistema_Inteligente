@@ -14,11 +14,139 @@ from django.contrib.staticfiles.finders import find
 # ReportLab
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet
+# Adicionado ParagraphStyle aqui para evitar o NameError
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle 
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 
 from .models import Cliente, Chamado
-from .forms import ClienteForm, ChamadoForm 
+from .forms import ClienteForm, ChamadoForm
+
+
+
+
+@login_required
+@login_required
+def gerar_os_pdf(request, chamado_id):
+    chamado = get_object_or_404(Chamado, id=chamado_id)
+    
+    response = HttpResponse(content_type='application/pdf')
+    nome_arquivo = f"OS_{chamado.id}_{chamado.cliente.nome[:15].replace(' ', '_')}.pdf"
+    response['Content-Disposition'] = f'attachment; filename="{nome_arquivo}"'
+
+    # Configuração básica do documento
+    doc = SimpleDocTemplate(response, pagesize=A4, leftMargin=40, rightMargin=40, topMargin=40, bottomMargin=40)
+    elements = []
+    styles = getSampleStyleSheet()
+
+    # --- 1. DEFINIÇÃO DE ESTILOS (Para corrigir o espaçamento/encavalamento) ---
+    style_titulo = ParagraphStyle('TituloOS', parent=styles['Normal'], fontSize=16, leading=20, fontName='Helvetica-Bold')
+    style_subtitulo = ParagraphStyle('SubtituloOS', parent=styles['Normal'], fontSize=12, leading=15)
+    style_id = ParagraphStyle('IdOS', parent=styles['Normal'], fontSize=10, leading=12, fontName='Helvetica-Bold')
+
+    # --- 2. CABEÇALHO ---
+    logo_path = find('img/logo.png')
+    
+    titulo_empresa = Paragraph("SmartFlow - Sistema de Gestão", style_titulo)
+    subtitulo_doc = Paragraph("Relatório Técnico de Chamados", style_subtitulo)
+    info_os = Paragraph(f"Ordem de Serviço #{chamado.id}", style_id)
+
+    # Criamos uma lista de elementos para a célula de texto
+    coluna_texto = [titulo_empresa, Spacer(1, 3), subtitulo_doc, Spacer(1, 3), info_os]
+
+    if logo_path and os.path.exists(logo_path):
+        img = Image(logo_path, width=70, height=35)
+        header_tab = Table([[img, coluna_texto]], colWidths=[90, 390])
+    else:
+        header_tab = Table([[coluna_texto]], colWidths=[480])
+
+    header_tab.setStyle(TableStyle([
+        ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+        ('LEFTPADDING', (0,0), (-1,-1), 0),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+    ]))
+    elements.append(header_tab)
+    
+    # Linha divisória
+    elements.append(Spacer(1, 5))
+    line = Table([['']], colWidths=[480], rowHeights=[1])
+    line.setStyle(TableStyle([('LINEBELOW', (0,0), (-1,-1), 1, colors.black)]))
+    elements.append(line)
+    elements.append(Spacer(1, 20))
+
+    # --- 3. DADOS DO CLIENTE E CHAMADO ---
+    telefone = getattr(chamado.cliente, 'telefone', 'Não informado')
+    dados_info = [
+        [Paragraph("<b>DADOS DO CLIENTE</b>", styles['Normal']), Paragraph("<b>INFORMAÇÕES TÉCNICAS</b>", styles['Normal'])],
+        [f"Nome: {chamado.cliente.nome}", f"Responsável: {chamado.responsavel.get_full_name() or chamado.responsavel.username}"],
+        [f"Contato: {telefone}", f"Data de Abertura: {chamado.data_criacao.strftime('%d/%m/%Y %H:%M')}"],
+        ["", f"Status Atual: {chamado.get_status_display().upper()}"]
+    ]
+    
+    info_tab = Table(dados_info, colWidths=[240, 240])
+    info_tab.setStyle(TableStyle([
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.grey),
+        ('BOTTOMPADDING', (0,0), (-1,0), 5),
+        ('FONTSIZE', (0,1), (-1,-1), 10),
+    ]))
+    elements.append(info_tab)
+    elements.append(Spacer(1, 20))
+
+    # --- 4. DESCRIÇÃO E SOLUÇÃO ---
+    elements.append(Paragraph("<b>DESCRIÇÃO DO PROBLEMA / SOLICITAÇÃO</b>", styles['Normal']))
+    elements.append(Spacer(1, 5))
+    elements.append(Paragraph(chamado.descricao, styles['Normal']))
+    elements.append(Spacer(1, 15))
+
+    solucao_texto = getattr(chamado, 'solucao', None)
+    if solucao_texto:
+        elements.append(Paragraph("<b>SOLUÇÃO APLICADA / OBSERVAÇÕES</b>", styles['Normal']))
+        elements.append(Spacer(1, 5))
+        sol_tab = Table([[Paragraph(solucao_texto, styles['Normal'])]], colWidths=[480])
+        sol_tab.setStyle(TableStyle([
+            ('BACKGROUND', (0,0), (-1,-1), colors.whitesmoke),
+            ('BOX', (0,0), (-1,-1), 0.5, colors.grey),
+            ('PADDING', (0,0), (-1,-1), 10),
+        ]))
+        elements.append(sol_tab)
+        elements.append(Spacer(1, 20))
+
+    # --- 5. FINANCEIRO ---
+    valor = getattr(chamado, 'valor', 0.00)
+    try:
+        meio_pag = chamado.get_meio_pagamento_display()
+    except:
+        meio_pag = getattr(chamado, 'meio_pagamento', 'A definir')
+
+    pagamento_dados = [
+        [Paragraph("<b>RESUMO FINANCEIRO</b>", styles['Normal']), ""],
+        ["Valor Total do Serviço:", f"R$ {valor:.2f}"],
+        ["Forma de Pagamento:", str(meio_pag)]
+    ]
+    
+    pag_tab = Table(pagamento_dados, colWidths=[150, 330])
+    pag_tab.setStyle(TableStyle([
+        ('LINEBELOW', (0,0), (-1,0), 1, colors.black),
+        ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+        ('GRID', (0,1), (-1,-1), 0.5, colors.lightgrey),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+    ]))
+    elements.append(pag_tab)
+
+    # --- 6. ASSINATURAS E RODAPÉ ---
+    elements.append(Spacer(1, 60))
+    tab_ass = Table([
+        ["___________________________", "___________________________"],
+        ["Assinatura do Responsável", "Assinatura do Cliente"]
+    ], colWidths=[240, 240])
+    tab_ass.setStyle(TableStyle([('ALIGN', (0,0), (-1,-1), 'CENTER'), ('FONTSIZE', (0,1), (-1,-1), 9)]))
+    elements.append(tab_ass)
+
+    elements.append(Spacer(1, 30))
+    elements.append(Paragraph(f"<center><font size='8'>Gerado por SmartFlow em {datetime.now().strftime('%d/%m/%Y %H:%M')}</font></center>", styles['Normal']))
+
+    doc.build(elements)
+    return response
 
 # --- GERAÇÃO DE PDF ---
 

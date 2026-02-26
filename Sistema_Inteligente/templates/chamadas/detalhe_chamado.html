@@ -5,12 +5,17 @@
     
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
         <h2 style="margin: 0; color: #333;">📋 Chamado #{{ chamado.id }}</h2>
-        <span style="padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 13px;
-            {% if chamado.status == 'aberto' %} background: #cfe2ff; color: #084298;
-            {% elif chamado.status == 'atendimento' %} background: #fff3cd; color: #856404;
-            {% else %} background: #d1e7dd; color: #0f5132; {% endif %}">
-            {{ chamado.get_status_display }}
-        </span>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{% url 'gerar_os_pdf' chamado.id %}" style="text-decoration: none; background: #17a2b8; color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 14px;">
+                🖨️ Imprimir O.S.
+            </a>
+            <span style="padding: 5px 15px; border-radius: 20px; font-weight: bold; text-transform: uppercase; font-size: 13px;
+                {% if chamado.status == 'aberto' %} background: #cfe2ff; color: #084298;
+                {% elif chamado.status == 'atendimento' %} background: #fff3cd; color: #856404;
+                {% else %} background: #d1e7dd; color: #0f5132; {% endif %}">
+                {{ chamado.get_status_display }}
+            </span>
+        </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
@@ -21,6 +26,19 @@
         <div>
             <p><strong>📅 Criado em:</strong> {{ chamado.data_criacao|date:"d/m/Y H:i" }}</p>
             <p><strong>🚨 Prioridade:</strong> {{ chamado.get_prioridade_display }}</p>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; padding: 15px; background: #fdfdfe; border: 1px dashed #ccc; border-radius: 8px;">
+        <div>
+            <p style="margin: 0;"><strong>💰 Valor do Serviço:</strong> 
+               <span style="color: #28a745; font-weight: bold;">R$ {{ chamado.valor|default:"0,00" }}</span>
+            </p>
+        </div>
+        <div>
+            <p style="margin: 0;"><strong>💳 Meio de Pagamento:</strong> 
+               {{ chamado.get_meio_pagamento_display|default:"A definir" }}
+            </p>
         </div>
     </div>
 
@@ -37,11 +55,13 @@
     </div>
     {% endif %}
 
-    <div style="display: flex; gap: 10px; margin-top: 30px;">
-        <a href="{% url 'dashboard' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">⬅️ Voltar ao Dashboard</a>
+    <div style="display: flex; gap: 10px; margin-top: 30px; border-top: 1px solid #eee; pt-20">
+        <a href="{% url 'lista_chamados' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">⬅️ Voltar à Lista</a>
         
         {% if chamado.status != 'finalizado' %}
-            <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">Atender</a>
+            <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">Atender</a>
+            
+            <a href="{% url 'finalizar_chamado' chamado.id %}" style="text-decoration: none; background: #28a745; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">✅ Finalizar Chamado</a>
         {% endif %}
     </div>
 </div>
