@@ -137,6 +137,17 @@ LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'dashboard' 
 LOGOUT_REDIRECT_URL = 'two_factor:login'
 
+
+# Configurações de E-mail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'batistam032@gmail.com' 
+EMAIL_HOST_PASSWORD = 'calhxlkuydclwbju'
+DEFAULT_FROM_EMAIL = 'SmartFlow <seu-email@gmail.com>'
+
+
 #AUTHENTICATION_BACKENDS = (
     #'two_factor.auth_backends.ModelBackend',
     #'django.contrib.auth.backends.ModelBackend',)

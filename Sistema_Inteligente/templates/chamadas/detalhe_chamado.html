@@ -55,13 +55,25 @@
     </div>
     {% endif %}
 
-    <div style="display: flex; gap: 10px; margin-top: 30px; border-top: 1px solid #eee; pt-20">
-        <a href="{% url 'lista_chamados' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">⬅️ Voltar à Lista</a>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+        <a href="{% url 'lista_chamados' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">
+            ⬅️ Voltar
+        </a>
         
         {% if chamado.status != 'finalizado' %}
-            <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">Atender</a>
+            {% if chamado.status == 'aberto' %}
+                <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" style="text-decoration: none; background: #007bff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold;">
+                    🚀 Iniciar Atendimento
+                </a>
+            {% endif %}
             
-            <a href="{% url 'finalizar_chamado' chamado.id %}" style="text-decoration: none; background: #28a745; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; margin-top: 15px; display: inline-block;">✅ Finalizar Chamado</a>
+            <a href="{% url 'finalizar_chamado' chamado.id %}" 
+               style="text-decoration: none; background: #28a745; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; border: 2px solid #1e7e34; transition: 0.3s;"
+               onclick="return confirm('Isso enviará a cobrança via E-mail e WhatsApp. Deseja continuar?')">
+               💰 Finalizar e Cobrar Cliente
+            </a>
+        {% else %}
+            <span style="color: #28a745; font-weight: bold; padding: 10px;">✨ Este chamado já foi concluído e pago.</span>
         {% endif %}
     </div>
 </div>

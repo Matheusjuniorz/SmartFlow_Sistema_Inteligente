@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Cliente(models.Model):  
     nome = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
@@ -11,66 +10,42 @@ class Cliente(models.Model):
         return self.nome
 
 class Chamado(models.Model):
-    STATUS_CHOICES = [
-        ('aberto', 'Aberto'),
-        ('em_andamento', 'Em Andamento'),
-        ('concluido', 'Concluído'),
-    ]
-    
     PRIORIDADE_CHOICES = [
         ('baixa', 'Baixa'),
         ('media', 'Média'),
         ('alta', 'Alta'),
     ]
 
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    titulo = models.CharField(max_length=100)
-    descricao = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aberto')
-    prioridade = models.CharField(max_length=10, choices=PRIORIDADE_CHOICES, default='baixa')
-    responsavel = models.CharField(max_length=50) 
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    ultima_alteracao = models.DateTimeField(auto_now=True)
+    STATUS_CHOICES = [
+        ('aberto', 'Aberto'),
+        ('atendimento', 'Em Atendimento'),
+        ('finalizado', 'Finalizado'),
+        ('cancelado', 'Cancelado'),
+    ]
 
-    def __str__(self):
-        return f"{self.titulo} - {self.cliente.nome}"
-
-
-class Chamado(models.Model):
-    titulo = models.CharField(max_length=200, verbose_name="Título")
-    prioridade = models.CharField(
-        max_length=10, 
-        choices=[('baixa', 'Baixa'), ('media', 'Média'), ('alta', 'Alta')],
-        default='media'
-    )
-    
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Selecione o Cliente")
-    descricao = models.TextField()
-    data_criacao = models.DateTimeField(auto_now_add=True)
-    
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    descricao = models.TextField()
-    responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    data_criacao = models.DateTimeField(auto_now_add=True)
-
-    valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    meio_pagamento = models.CharField(max_length=50, choices=[
+    MEIO_PAGAMENTO_CHOICES = [
         ('dinheiro', 'Dinheiro'),
         ('pix', 'PIX'),
         ('cartao', 'Cartão de Crédito/Débito'),
         ('boleto', 'Boleto'),
-    ], default='pix')
+    ]
+
+    titulo = models.CharField(max_length=200, verbose_name="Título")
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Cliente")
+    responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Responsável")
     
-    status = models.CharField(
-    max_length=20,
-    choices=[
-        ('aberto', 'Aberto'),
-        ('em_andamento', 'Em Atendimento'),
-        ('finalizado', 'Finalizado'),
-        ('cancelado', 'Cancelado')
-    ],
-    default='aberto'
-)
+    descricao = models.TextField(verbose_name="Descrição do Problema", default="") 
+    solucao = models.TextField(blank=True, null=True, verbose_name="Solução") 
+    
+    prioridade = models.CharField(max_length=10, choices=PRIORIDADE_CHOICES, default='media')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aberto')
+
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    ultima_alteracao = models.DateTimeField(auto_now=True) # Mantive este que é útil
+    data_finalizacao = models.DateTimeField(blank=True, null=True)
+
+    valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    meio_pagamento = models.CharField(max_length=50, choices=MEIO_PAGAMENTO_CHOICES, default='pix')
     
     def __str__(self):
-        return self.titulo
+        return f"#{self.id} - {self.titulo}"

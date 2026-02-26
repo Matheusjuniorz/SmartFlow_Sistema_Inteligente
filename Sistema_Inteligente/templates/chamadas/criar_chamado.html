@@ -4,93 +4,60 @@
     <meta charset="UTF-8">
     <title>Novo Chamado - SmartFlow</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
-        
-        .form-container {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-
-        h2 { border-bottom: 2px solid #ffc107; padding-bottom: 10px; color: #333; }
-
-        .form-group { margin-bottom: 20px; }
-
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-
-        select, textarea, input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box; /* Garante que o padding não passe da largura */
-            font-size: 16px;
-        }
-
-        textarea { resize: vertical; }
-
-        .btn-container { display: flex; gap: 10px; margin-top: 20px; }
-
-        .btn { 
-            padding: 12px 20px; 
-            cursor: pointer; 
-            border: none; 
-            border-radius: 4px; 
-            font-weight: bold; 
-            text-decoration: none; 
-            text-align: center;
-            flex: 1;
-        }
-
-        .btn-salvar { background-color: #28a745; color: white; }
-        .btn-salvar:hover { background-color: #218838; }
-
-        .btn-cancelar { background-color: #6c757d; color: white; }
-        .btn-cancelar:hover { background-color: #5a6268; }
-
-        /* Estilo para quando não houver clientes */
-        .aviso-erro { color: #721c24; background-color: #f8d7da; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 40px; }
+        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
+        h2 { color: #333; border-bottom: 2px solid #ffc107; padding-bottom: 10px; }
+        .field { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .btn-ready { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-ready:hover { background: #218838; }
     </style>
 </head>
 <body>
 
-    <div class="form-container">
-        <h2>➕ Abrir Novo Chamado</h2>
-        <p>Preencha os dados abaixo para registrar o problema.</p>
+<div class="card">
+    <h2>➕ Abrir Novo Chamado</h2>
+    
+    <form method="POST" action="{% url 'criar_chamado' %}">
+        {% csrf_token %}
 
-        <form method="POST">
-            {% csrf_token %}
+        <div class="field">
+            <label>Cliente:</label>
+            <select name="cliente" required>
+                <option value="">-- Selecione o Cliente --</option>
+                {% for cliente in clientes %}
+                    <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label for="cliente">Selecione o Cliente:</label>
-                {% if clientes %}
-                    <select name="cliente" id="cliente" required>
-                        <option value="">-- Clique para selecionar o cliente --</option>
-                        {% for cliente in clientes %}
-                            <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
-                        {% endfor %}
-                    </select>
-                {% else %}
-                    <div class="aviso-erro">
-                        ⚠️ Nenhum cliente cadastrado. <a href="{% url 'lista_clientes' %}">Cadastre um cliente primeiro!</a>
-                    </div>
-                {% endif %}
-            </div>
+        <div class="field">
+            <label>Título / Assunto Curto:</label>
+            <input type="text" name="titulo" placeholder="Ex: Reparo de Impressora" required>
+        </div>
 
-            <div class="form-group">
-                <label for="descricao">Descrição do Problema / Assunto:</label>
-                <textarea name="descricao" id="descricao" rows="6" placeholder="Descreva detalhadamente o que está acontecendo..." required></textarea>
-            </div>
+        <div class="field">
+            <label>Descrição do Problema:</label>
+            <textarea name="descricao" rows="5" placeholder="Detalhe o defeito aqui..." required></textarea>
+        </div>
 
-            <div class="btn-container">
-                <button type="submit" class="btn btn-salvar">✅ Registrar Chamado</button>
-                <a href="{% url 'lista_chamados' %}" class="btn btn-cancelar">Desistir</a>
-            </div>
-        </form>
-    </div>
+        <div class="field">
+            <label>Prioridade:</label>
+            <select name="prioridade">
+                <option value="baixa">Baixa</option>
+                <option value="media" selected>Média</option>
+                <option value="alta">Alta</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn-ready">REGISTRAR CHAMADO AGORA</button>
+        
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="{% url 'lista_chamados' %}" style="color: #666; text-decoration: none;">Voltar para a lista</a>
+        </div>
+    </form>
+</div>
 
 </body>
 </html>

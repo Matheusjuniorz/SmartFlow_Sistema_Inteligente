@@ -58,6 +58,8 @@ urlpatterns = [
     path('chamados/excluir/<int:chamado_id>/', views.excluir_chamado, name='excluir_chamado'),
     path('chamados/status/<int:chamado_id>/<str:novo_status>/', views.mudar_status, name='mudar_status'),
     path('relatorios/', views.relatorio_chamados, name='relatorios'),
+    path('chamado/pagar/<int:chamado_id>/', views.finalizar_chamado, name='finalizar_chamado'),
+    path('chamados/finalizar/<int:chamado_id>/', views.finalizar_chamado, name='finalizar_chamado'),
 
     # Gestão de Clientes
     path('clientes/', views.lista_clientes, name='lista_clientes'),
@@ -65,6 +67,7 @@ urlpatterns = [
     path('clientes/editar/<int:id>/', views.editar_cliente, name='editar_cliente'),
     path('clientes/excluir/<int:id>/', views.excluir_cliente, name='excluir_cliente'),
     path('chamados/os/<int:chamado_id>/', views.gerar_os_pdf, name='gerar_os_pdf'),
+    
     
     # Usuários
     path('registrar/', views.registrar_responsavel, name='registrar_responsavel'),
