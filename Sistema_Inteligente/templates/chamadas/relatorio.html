@@ -1,49 +1,85 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="padding: 20px; font-family: sans-serif;">
-    <h2 style="color: #333; margin-bottom: 25px;">📊 Relatórios de Desempenho</h2>
+<div class="min-h-screen bg-[#1a1d21] p-6 md:p-10 text-gray-200">
+    
+    <div class="max-w-6xl mx-auto mb-10">
+        <h2 class="text-3xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
+            <span class="bg-red-600 p-2 rounded-xl shadow-lg shadow-red-900/40 text-xl">📊</span>
+            Relatórios de Desempenho
+        </h2>
+        <p class="text-gray-500 text-xs font-bold uppercase tracking-[0.3em] mt-3 ml-14">Análise Geral de Operações</p>
+    </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h3 style="color: #007bff; border-bottom: 2px solid #eee; padding-bottom: 10px;">📅 Volume Mensal</h3>
-            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                <thead>
-                    <tr style="text-align: left; border-bottom: 2px solid #eee;">
-                        <th style="padding: 10px;">Mês/Ano</th>
-                        <th style="padding: 10px;">Total de Chamados</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in relatorio_mensal %}
-                    <tr style="border-bottom: 1px solid #f9f9f9;">
-                        <td style="padding: 10px;">{{ item.mes|date:"F Y" }}</td>
-                        <td style="padding: 10px; font-weight: bold;">{{ item.total }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="bg-[#24292e] rounded-3xl border border-gray-800 shadow-2xl overflow-hidden transition-all hover:border-red-600/30">
+            <div class="p-6 border-b border-gray-800 bg-[#2d333b]/50 flex justify-between items-center">
+                <h3 class="text-red-500 font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+                    📅 Volume Mensal
+                </h3>
+                <span class="text-[10px] text-gray-500 font-bold uppercase">Últimos meses</span>
+            </div>
+            
+            <div class="p-6">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-gray-500 text-[10px] uppercase font-black tracking-widest border-b border-gray-800">
+                            <th class="pb-4">Mês / Ano</th>
+                            <th class="pb-4 text-right">Qtd. Chamados</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/50">
+                        {% for item in relatorio_mensal %}
+                        <tr class="group hover:bg-[#1a1d21] transition-colors">
+                            <td class="py-4 text-sm font-bold text-gray-300 group-hover:text-white">{{ item.mes|date:"F Y" }}</td>
+                            <td class="py-4 text-right">
+                                <span class="bg-gray-800 text-red-500 px-3 py-1 rounded-lg font-mono font-bold border border-gray-700">
+                                    {{ item.total }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h3 style="color: #28a745; border-bottom: 2px solid #eee; padding-bottom: 10px;">🏆 Top 5 Clientes (Mais Chamados)</h3>
-            <ul style="list-style: none; padding: 0; margin-top: 15px;">
-                {% for cliente in estatisticas_clientes %}
-                <li style="padding: 12px; border-bottom: 1px solid #f9f9f9; display: flex; justify-content: space-between;">
-                    <span>{{ cliente.cliente__nome }}</span>
-                    <span style="background: #e6fffa; color: #28a745; padding: 2px 10px; border-radius: 12px; font-weight: bold;">
-                        {{ cliente.total }}
-                    </span>
-                </li>
-                {% endfor %}
-            </ul>
+        <div class="bg-[#24292e] rounded-3xl border border-gray-800 shadow-2xl overflow-hidden transition-all hover:border-green-500/30">
+            <div class="p-6 border-b border-gray-800 bg-[#2d333b]/50 flex justify-between items-center">
+                <h3 class="text-green-500 font-black text-xs uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    🏆 Top 5 Clientes
+                </h3>
+                <span class="text-[10px] text-gray-500 font-bold uppercase">Maiores Demandas</span>
+            </div>
+            
+            <div class="p-6">
+                <ul class="space-y-3">
+                    {% for cliente in estatisticas_clientes %}
+                    <li class="flex justify-between items-center p-4 bg-[#1a1d21] rounded-2xl border border-gray-800 transition-all hover:translate-x-2">
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-600 font-black text-xs italic">0{{ forloop.counter }}</span>
+                            <span class="text-sm font-bold text-gray-200">{{ cliente.cliente__nome }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-gray-600 font-black uppercase">Tickets:</span>
+                            <span class="text-green-500 font-black font-mono">{{ cliente.total }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
 
     </div>
 
-    <div style="margin-top: 30px;">
-        <a href="{% url 'dashboard' %}" style="text-decoration: none; color: #666; font-weight: bold;">⬅️ Voltar ao Dashboard</a>
+    <div class="max-w-6xl mx-auto mt-12 flex items-center gap-4">
+        <a href="{% url 'dashboard' %}" class="group text-gray-500 hover:text-white transition-all flex items-center gap-2 font-black text-xs uppercase tracking-widest">
+            <span class="bg-gray-800 p-2 rounded-lg group-hover:bg-red-600 transition-colors">⬅️</span> 
+            Voltar ao Dashboard
+        </a>
     </div>
 </div>
 {% endblock %}

@@ -1,74 +1,101 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="min-h-screen bg-[#1a1d21] flex justify-center items-center p-6">
+    <div class="bg-[#24292e] w-full max-w-[450px] rounded-3xl shadow-2xl border border-gray-800 p-8 relative overflow-hidden">
+        
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-[80px]"></div>
+
+        <div class="text-center mb-8">
+            <div class="inline-block p-4 bg-gray-800 rounded-2xl mb-4 border border-gray-700 shadow-inner">
+                <span class="text-3xl">🔐</span>
+            </div>
+            <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Segurança do Responsável</h2>
+            <p class="text-gray-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2 italic">Verificação de Identidade Obrigatória</p>
+        </div>
+
+        <div class="bg-[#1a1d21] p-6 rounded-2xl border border-dashed border-gray-700 mb-6">
+            <p class="text-gray-400 text-sm text-center mb-4 leading-relaxed">
+                Escaneie o QR Code abaixo com o <span class="text-cyan-400 font-bold">Google Authenticator</span> para gerar seu código de acesso.
+            </p>
+            
+            <div class="two-factor-injected-content">
+                {% block two_factor_content %}
+                {% endblock %}
+            </div>
+        </div>
+
+        <div class="text-center">
+            <p class="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Proteção SmartFlow Ativa</p>
+        </div>
+    </div>
+</div>
+
 <style>
-    /* Centraliza o container da autenticação */
-    .two-factor-container {
-        max-width: 450px;
-        margin: 50px auto;
-        padding: 30px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        background: #fff;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        font-family: Arial, sans-serif;
-    }
-
-    .two-factor-container h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    /* Estilo do QR Code */
-    .two-factor-container img {
+    /* Estilização dos elementos injetados pelo django-two-factor-auth */
+    .two-factor-injected-content img {
         display: block;
         margin: 20px auto;
-        max-width: 200px;
-        border: 10px solid white;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        padding: 15px;
+        background: white; /* Mantemos branco para o QR code ser legível */
+        border-radius: 15px;
+        box-shadow: 0 0 25px rgba(0, 255, 255, 0.1);
+        max-width: 180px;
     }
 
-    /* Ajusta o formulário */
-    .two-factor-container form {
+    .two-factor-injected-content form {
         display: flex;
         flex-direction: column;
         gap: 15px;
     }
 
-    /* Estilo do Botão (Padronizado com o SmartFlow) */
-    .two-factor-container button {
-        background-color: #ffc107; /* Amarelo SmartFlow */
-        color: #000;
-        padding: 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        font-size: 16px;
-        transition: background 0.3s;
+    /* Estilizando o campo de código */
+    .two-factor-injected-content input[type="text"], 
+    .two-factor-injected-content input[type="number"] {
+        background-color: #1a1d21 !important;
+        border: 1px solid #374151 !important;
+        color: white !important;
+        padding: 12px !important;
+        border-radius: 12px !important;
+        text-align: center !important;
+        font-size: 1.5rem !important;
+        letter-spacing: 0.5em !important;
+        font-weight: bold !important;
+        outline: none !important;
     }
 
-    .two-factor-container button:hover {
-        background-color: #e0a800;
+    /* Botão de confirmação - Agora em Ciano/Azul para diferenciar de "Erros" */
+    .two-factor-injected-content button[type="submit"] {
+        background-color: #06b6d4 !important; /* Cyan-500 */
+        color: #fff !important;
+        padding: 14px !important;
+        border: none !important;
+        border-radius: 12px !important;
+        cursor: pointer !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.1em !important;
+        transition: all 0.3s !important;
+        box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3) !important;
     }
 
-    /* Estilo para links de ajuda/voltar */
-    .two-factor-container a {
-        text-align: center;
-        display: block;
-        margin-top: 15px;
-        color: #6c757d;
-        text-decoration: none;
+    .two-factor-injected-content button[type="submit"]:hover {
+        background-color: #0891b2 !important;
+        transform: translateY(-2px) !important;
+    }
+
+    /* Links de ajuda */
+    .two-factor-injected-content a {
+        color: #6b7280 !important;
+        font-size: 12px !important;
+        text-decoration: none !important;
+        text-align: center !important;
+        display: block !important;
+        margin-top: 10px !important;
+    }
+
+    .two-factor-injected-content a:hover {
+        color: #fff !important;
     }
 </style>
-
-<div class="two-factor-container">
-    <h2>Segurança do Responsável</h2>
-    <p style="text-align: center; color: #666;">Use o Google Authenticator para prosseguir.</p>
-    <hr>
-
-    {% block two_factor_content %}
-    {% endblock %}
-</div>
 {% endblock %}

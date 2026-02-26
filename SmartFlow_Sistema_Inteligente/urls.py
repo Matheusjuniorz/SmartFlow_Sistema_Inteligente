@@ -60,6 +60,9 @@ urlpatterns = [
     path('relatorios/', views.relatorio_chamados, name='relatorios'),
     path('chamado/pagar/<int:chamado_id>/', views.finalizar_chamado, name='finalizar_chamado'),
     path('chamados/finalizar/<int:chamado_id>/', views.finalizar_chamado, name='finalizar_chamado'),
+    path('webhooks/mercadopago/', views.mercadopago_webhook, name='mp_webhook'),
+    path('pagamento/sucesso/', views.pagamento_sucesso, name='pagamento_sucesso'),
+    path('chamados/registrados/', views.chamados_registrados, name='chamados_registrados'),
 
     # Gestão de Clientes
     path('clientes/', views.lista_clientes, name='lista_clientes'),
@@ -68,7 +71,7 @@ urlpatterns = [
     path('clientes/excluir/<int:id>/', views.excluir_cliente, name='excluir_cliente'),
     path('chamados/os/<int:chamado_id>/', views.gerar_os_pdf, name='gerar_os_pdf'),
     
-    
+
     # Usuários
     path('registrar/', views.registrar_responsavel, name='registrar_responsavel'),
 ]

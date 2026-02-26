@@ -1,182 +1,154 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Chamados - SmartFlow</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th { background-color: #343a40; color: white; text-align: left; padding: 12px; }
-        td { padding: 12px; border-bottom: 1px solid #ddd; }
-        
-        /* Barra Superior */
-        .header-container { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: white; 
-            padding: 10px 20px; 
-            border-radius: 8px; 
-            border: 1px solid #ddd;
-            margin-bottom: 20px;
-        }
+{% extends "base.html" %}
 
-        /* Barra de Filtros */
-        .filter-container {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-            border: 1px solid #ccc;
-        }
-        .filter-group { display: flex; flex-direction: column; gap: 5px; }
-        .filter-group label { font-size: 12px; font-weight: bold; color: #444; }
-        .filter-group input, .filter-group select { padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
-
-        /* Estilos dos Botões */
-        .btn { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px; transition: 0.3s; }
-        .btn-novo { background-color: #28a745; color: white; }
-        .btn-voltar { background-color: #6c757d; color: white; margin-left: 10px; }
-        .btn-dashboard { background-color: #007bff; color: white; margin-left: 10px; }
-        .btn-filtrar { background-color: #343a40; color: white; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        
-        /* Botões de PDF */
-        .btn-pdf { background-color: #d9534f; color: white; margin-left: 5px; } /* Relatório Geral */
-        .btn-os { background-color: #17a2b8; color: white; font-size: 12px; padding: 5px 10px; } /* Botão O.S. */
-        
-        .btn-pdf:hover { background-color: #c9302c; }
-        .btn-os:hover { background-color: #138496; }
-        
-        .btn-sair { background-color: #ff4d4d; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; }
-        .btn-excluir { color: #d9534f; text-decoration: none; font-weight: bold; margin-left: 10px; }
-        .btn-detalhes { color: #007bff; text-decoration: none; font-weight: bold; }
-
-        .user-info { font-size: 14px; color: #555; margin-right: 15px; }
-    </style>
-</head>
-<body>
-
-    <div class="header-container">
+{% block content %}
+<div class="min-h-screen bg-[#1a1d21] p-5 md:p-10 text-gray-200">
+    
+    <div class="bg-[#24292e] border border-gray-800 p-6 rounded-2xl shadow-xl mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-            <h1 style="margin:0; font-size: 24px;">📋 Chamados Registrados</h1>
+            <h1 class="text-2xl font-black text-white flex items-center gap-3">
+                <span class="p-2 bg-red-600 rounded-lg shadow-lg shadow-red-900/40 text-sm">📋</span>
+                Chamados Registrados
+            </h1>
+            <p class="text-gray-500 text-xs mt-1 uppercase tracking-widest">Gerenciamento de Ordens de Serviço</p>
         </div>
-        <div style="display: flex; align-items: center;">
+
+        <div class="flex items-center gap-4">
             {% if user.is_authenticated %}
-                <span class="user-info">Responsável: <strong>{{ user.username }}</strong></span>
-                <form action="{% url 'two_factor:logout' %}" method="post" style="margin: 0;">
+                <div class="text-right hidden md:block">
+                    <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Operador</p>
+                    <p class="text-white font-bold text-sm">{{ user.username }}</p>
+                </div>
+                <form action="{% url 'two_factor:logout' %}" method="post" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="btn-sair">Sair do Sistema</button>
+                    <button type="submit" class="bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 px-4 py-2 rounded-lg text-xs font-black transition-all">
+                        SAIR
+                    </button>
                 </form>
             {% endif %}
         </div>
     </div>
     
-    <div style="margin-bottom: 20px;">
-        <a href="{% url 'criar_chamado' %}" class="btn btn-novo">+ Abrir Novo Chamado</a>
-        <a href="{% url 'dashboard' %}" class="btn btn-dashboard">📊 Ir para o Dashboard</a>
-        <a href="{% url 'lista_clientes' %}" class="btn btn-voltar">Voltar para Clientes</a>
+    <div class="flex flex-wrap gap-3 mb-6">
+        <a href="{% url 'criar_chamado' %}" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-red-900/20">
+            + Novo Chamado
+        </a>
+        <a href="{% url 'dashboard' %}" class="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all">
+            📊 Dashboard
+        </a>
+        <a href="{% url 'lista_clientes' %}" class="bg-gray-800 hover:bg-gray-700 text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all">
+            👥 Clientes
+        </a>
     </div>
 
-    <form method="GET" class="filter-container" id="filterForm">
-        <div class="filter-group">
-            <label>DIA</label>
-            <input type="number" name="dia" value="{{ filtros.dia }}" placeholder="Ex: 25" min="1" max="31" style="width: 60px;">
+    <form method="GET" class="bg-[#24292e] border border-gray-800 p-6 rounded-2xl mb-6 shadow-xl" id="filterForm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-end">
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Dia</label>
+                <input type="number" name="dia" value="{{ filtros.dia }}" placeholder="Ex: 25" min="1" max="31" 
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white p-2 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none transition-all">
+            </div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Mês</label>
+                <select name="mes" class="w-full bg-[#1a1d21] border border-gray-700 text-white p-2 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none transition-all">
+                    <option value="">Todos</option>
+                    <option value="1" {% if filtros.mes == "1" %}selected{% endif %}>Janeiro</option>
+                    <option value="2" {% if filtros.mes == "2" %}selected{% endif %}>Fevereiro</option>
+                    <option value="3" {% if filtros.mes == "3" %}selected{% endif %}>Março</option>
+                    <option value="4" {% if filtros.mes == "4" %}selected{% endif %}>Abril</option>
+                    <option value="5" {% if filtros.mes == "5" %}selected{% endif %}>Maio</option>
+                    <option value="6" {% if filtros.mes == "6" %}selected{% endif %}>Junho</option>
+                    <option value="7" {% if filtros.mes == "7" %}selected{% endif %}>Julho</option>
+                    <option value="8" {% if filtros.mes == "8" %}selected{% endif %}>Agosto</option>
+                    <option value="9" {% if filtros.mes == "9" %}selected{% endif %}>Setembro</option>
+                    <option value="10" {% if filtros.mes == "10" %}selected{% endif %}>Outubro</option>
+                    <option value="11" {% if filtros.mes == "11" %}selected{% endif %}>Novembro</option>
+                    <option value="12" {% if filtros.mes == "12" %}selected{% endif %}>Dezembro</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Ano</label>
+                <input type="number" name="ano" value="{{ filtros.ano }}" placeholder="2026" 
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white p-2 rounded-lg focus:ring-2 focus:ring-red-600 focus:outline-none transition-all">
+            </div>
+            
+            <button type="submit" class="bg-white hover:bg-red-600 hover:text-white text-black font-black py-2 rounded-lg transition-all uppercase text-[10px] tracking-widest">
+                🔍 Filtrar
+            </button>
+            
+            <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-black py-2 rounded-lg transition-all uppercase text-[10px] tracking-widest flex items-center justify-center gap-2" onclick="gerarPDF()">
+                <i class="fas fa-file-pdf"></i> PDF Geral
+            </button>
         </div>
-        <div class="filter-group">
-            <label>MÊS</label>
-            <select name="mes">
-                <option value="">Todos</option>
-                <option value="1" {% if filtros.mes == "1" %}selected{% endif %}>Janeiro</option>
-                <option value="2" {% if filtros.mes == "2" %}selected{% endif %}>Fevereiro</option>
-                <option value="3" {% if filtros.mes == "3" %}selected{% endif %}>Março</option>
-                <option value="4" {% if filtros.mes == "4" %}selected{% endif %}>Abril</option>
-                <option value="5" {% if filtros.mes == "5" %}selected{% endif %}>Maio</option>
-                <option value="6" {% if filtros.mes == "6" %}selected{% endif %}>Junho</option>
-                <option value="7" {% if filtros.mes == "7" %}selected{% endif %}>Julho</option>
-                <option value="8" {% if filtros.mes == "8" %}selected{% endif %}>Agosto</option>
-                <option value="9" {% if filtros.mes == "9" %}selected{% endif %}>Setembro</option>
-                <option value="10" {% if filtros.mes == "10" %}selected{% endif %}>Outubro</option>
-                <option value="11" {% if filtros.mes == "11" %}selected{% endif %}>Novembro</option>
-                <option value="12" {% if filtros.mes == "12" %}selected{% endif %}>Dezembro</option>
-            </select>
+        <div class="mt-4 text-center">
+            <a href="{% url 'lista_chamados' %}" class="text-[10px] text-gray-600 hover:text-red-500 uppercase font-bold tracking-widest transition-colors">Limpar Filtros</a>
         </div>
-        <div class="filter-group">
-            <label>ANO</label>
-            <input type="number" name="ano" value="{{ filtros.ano }}" placeholder="2026" style="width: 80px;">
-        </div>
-        
-        <button type="submit" class="btn-filtrar">🔍 Filtrar</button>
-        
-        <button type="button" class="btn btn-pdf" onclick="gerarPDF()">
-            <i class="fas fa-file-contract"></i> Relatório Geral
-        </button>
-        
-        <a href="{% url 'lista_chamados' %}" style="text-decoration: none; color: #666; font-size: 12px; margin-bottom: 8px;">Limpar Filtros</a>
     </form>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Descrição/Assunto</th>
-                <th>Data de Abertura</th>
-                <th style="text-align: center;">Ações / Documentos</th> 
-            </tr>
-        </thead>
-        <tbody>
-            {% for chamado in chamados %}
-            <tr>
-                <td>#{{ chamado.id }}</td>
-                <td><strong>{{ chamado.cliente.nome }}</strong></td>
-                <td>{{ chamado.descricao|truncatechars:50 }}</td>
-                <td>{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
-                <td style="text-align: center;">
-                    <a href="{% url 'gerar_os_pdf' chamado.id %}" class="btn btn-os">
-                        <i class="fas fa-print"></i> Gerar O.S.
-                    </a>
-                    |
-                    <a href="{% url 'detalhe_chamado' chamado.id %}" class="btn-detalhes">🔍 Detalhes</a> 
-                    | 
-                    <a href="{% url 'excluir_chamado' chamado.id %}" 
-                       class="btn-excluir" 
-                       onclick="return confirm('⚠️ Tem certeza que deseja excluir o chamado #{{ chamado.id }}?')">
-                        🗑️ Excluir
-                    </a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5" style="text-align: center; padding: 40px; color: #999;">
-                    Nenhum chamado encontrado.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 5px; display: inline-block; border: 1px solid #ddd;">
-        Total de chamados encontrados: <strong>{{ chamados.count }}</strong>
+    <div class="bg-[#24292e] rounded-2xl shadow-2xl border border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-gray-500 text-[10px] uppercase font-black tracking-[0.2em] border-b border-gray-800 bg-[#2d333b]">
+                        <th class="p-5">ID</th>
+                        <th class="p-5">Cliente</th>
+                        <th class="p-5">Assunto</th>
+                        <th class="p-5">Data de Abertura</th>
+                        <th class="p-5 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for chamado in chamados %}
+                    <tr class="hover:bg-[#2d333b]/50 transition-all group">
+                        <td class="p-5 text-red-500 font-mono font-bold">#{{ chamado.id }}</td>
+                        <td class="p-5">
+                            <span class="text-white font-bold block">{{ chamado.cliente.nome }}</span>
+                        </td>
+                        <td class="p-5 text-gray-400 text-sm italic">"{{ chamado.descricao|truncatechars:40 }}"</td>
+                        <td class="p-5 text-gray-500 text-xs font-mono">{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
+                        <td class="p-5">
+                            <div class="flex items-center justify-center gap-4">
+                                <a href="{% url 'gerar_os_pdf' chamado.id %}" class="text-cyan-500 hover:text-cyan-400 text-xs flex items-center gap-1 transition-colors" title="Gerar O.S.">
+                                    <i class="fas fa-print"></i> O.S.
+                                </a>
+                                <a href="{% url 'detalhe_chamado' chamado.id %}" class="text-white hover:text-red-500 text-xs font-black uppercase tracking-widest transition-colors">
+                                    Detalhes
+                                </a>
+                                <a href="{% url 'excluir_chamado' chamado.id %}" 
+                                   class="text-gray-600 hover:text-red-600 transition-colors"
+                                   onclick="return confirm('⚠️ Tem certeza que deseja excluir o chamado #{{ chamado.id }}?')">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="p-20 text-center text-gray-600 italic">Nenhum chamado encontrado no banco de dados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="bg-[#2d333b] p-4 border-t border-gray-800 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-gray-500">
+            <span>Resultados:</span>
+            <span class="bg-[#1a1d21] text-red-500 px-3 py-1 rounded-full border border-gray-700">{{ chamados.count }} Registros</span>
+        </div>
     </div>
+</div>
 
-    <script>
-        function gerarPDF() {
-            const dia = document.querySelector('input[name="dia"]').value;
-            const mes = document.querySelector('select[name="mes"]').value;
-            const ano = document.querySelector('input[name="ano"]').value;
-            
-            let url = "{% url 'gerar_pdf_chamados' %}?";
-            url += "dia=" + encodeURIComponent(dia);
-            url += "&mes=" + encodeURIComponent(mes);
-            url += "&ano=" + encodeURIComponent(ano);
-            
-            window.location.href = url;
-        }
-    </script>
-
-</body>
-</html>
+<script>
+    function gerarPDF() {
+        const dia = document.querySelector('input[name="dia"]').value;
+        const mes = document.querySelector('select[name="mes"]').value;
+        const ano = document.querySelector('input[name="ano"]').value;
+        
+        let url = "{% url 'gerar_pdf_chamados' %}?";
+        url += "dia=" + encodeURIComponent(dia);
+        url += "&mes=" + encodeURIComponent(mes);
+        url += "&ano=" + encodeURIComponent(ano);
+        
+        window.location.href = url;
+    }
+</script>
+{% endblock %}

@@ -3,27 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartFlow - Sistema Inteligente</title>
+    <title>SmartFlow - Interface de Comando</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f7f6; }
-        nav { background: #343a40; padding: 15px; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        nav a { color: white; text-decoration: none; margin-right: 15px; transition: 0.3s; }
-        nav a:hover { color: #ffc107; }
-        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            background-color: #1a1d21; /* Fundo padrão para evitar "flash" branco */
+        }
+
+        /* Estilização da Scrollbar para não quebrar o Dark Mode */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1d21; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #dc2626; }
     </style>
 </head>
-<body>
+<body class="bg-[#1a1d21] text-gray-200">
 
-    <nav>
-        <a href="/dashboard/" style="font-weight: bold; color: #ffc107;">📊 Dashboard</a>        
-        <a href="{% url 'lista_chamados' %}">📋 Ver Chamados</a> |
-        <a href="{% url 'criar_chamado' %}">➕ Novo Chamado</a>
+    <nav class="bg-[#24292e] border-b border-gray-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50 shadow-2xl">
+        
+        <div class="flex items-center gap-8">
+            <a href="/dashboard/" class="flex items-center gap-2 group">
+                <div class="bg-red-600 text-white p-2 rounded-lg shadow-lg shadow-red-900/20 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="text-xl font-black text-white tracking-tighter uppercase group-hover:text-red-500 transition-colors">
+                    Smart<span class="text-red-600">Flow</span>
+                </span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-1">
+                <a href="/dashboard/" class="px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-gray-800 transition-all flex items-center gap-2">
+                    <i class="fas fa-chart-pie text-red-500"></i> Dashboard
+                </a>
+                <a href="{% url 'lista_chamados' %}" class="px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-gray-800 transition-all flex items-center gap-2">
+                    <i class="fas fa-tools text-red-500"></i> Atendimento
+                </a>
+                <a href="{% url 'chamados_registrados' %}" class="px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-gray-800 transition-all flex items-center gap-2">
+                    <i class="fas fa-list-ul text-red-500"></i> Registrados
+                </a>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <a href="{% url 'criar_chamado' %}" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-lg shadow-red-900/40 flex items-center gap-2 transform active:scale-95">
+                <i class="fas fa-plus"></i> Novo Chamado
+            </a>
+            
+            {% if user.is_authenticated %}
+            <div class="ml-4 pl-4 border-l border-gray-800 flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-[9px] font-black text-gray-500 uppercase leading-none">Status: Online</p>
+                    <p class="text-[11px] font-bold text-white">{{ user.username }}</p>
+                </div>
+                <div class="w-8 h-8 bg-gray-800 rounded-full border border-gray-700 flex items-center justify-center text-xs font-bold text-red-500">
+                    {{ user.username|slice:":1"|upper }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
     </nav>
 
-    <div class="container">
+    <main class="min-h-[calc(100vh-73px)]">
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
+
+    <footer class="bg-[#1a1d21] border-t border-gray-800/50 py-6 text-center">
+        <p class="text-[10px] text-gray-600 font-black uppercase tracking-[0.4em]">
+            SmartFlow Engine © 2026 | Sistema de Alta Performance
+        </p>
+    </footer>
 
 </body>
 </html>

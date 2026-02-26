@@ -1,105 +1,141 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; min-height: 100vh;">
+<div class="min-h-screen bg-[#1a1d21] p-5 md:p-10 text-gray-200">
     
-    <div style="margin-bottom: 25px;">
-        <h2 style="color: #333; margin: 0;">📊 Painel de Controle SmartFlow</h2>
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+            <h2 class="text-3xl font-bold text-white flex items-center gap-3">
+                <span class="w-2 h-8 bg-red-600 rounded-full"></span>
+                📊 Painel de Controle SmartFlow
+            </h2>
+            <p class="text-gray-400 text-sm mt-1 ml-5">Bem-vindo ao centro de comando do seu fluxo de trabalho.</p>
+        </div>
+        
+        {% if is_admin %}
+        <div class="bg-[#24292e] border-l-4 border-green-500 px-6 py-3 rounded-xl shadow-lg">
+            <span class="text-gray-400 text-xs uppercase font-black tracking-widest block">Receita Total</span>
+            <span class="text-green-500 text-2xl font-bold">R$ {{ total_recebido|floatformat:2 }}</span>
+        </div>
+        {% endif %}
     </div>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         
-        <a href="{% url 'dashboard' %}" style="text-decoration: none; color: inherit;">
-            <div style="background: white; padding: 20px; border-radius: 10px; border-left: 5px solid #007bff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;">
-                <small style="color: #666; font-weight: bold; text-transform: uppercase;">Total de Chamados</small>
-                <h3 style="font-size: 2rem; margin: 10px 0; color: #007bff;">{{ total }}</h3>
+        {% if is_admin %}
+        <div class="bg-[#24292e] p-6 rounded-2xl border border-gray-800 shadow-xl relative overflow-hidden group hover:border-green-500/50 transition-all">
+            <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="text-4xl">💰</span>
+            </div>
+            <small class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.2em]">Dinheiro em Caixa</small>
+            <h3 class="text-2xl font-black text-green-500 mt-2">R$ {{ total_recebido|floatformat:2 }}</h3>
+            <div class="w-12 h-1 bg-green-500 mt-4 rounded-full"></div>
+        </div>
+
+        <div class="bg-[#24292e] p-6 rounded-2xl border border-gray-800 shadow-xl relative overflow-hidden group hover:border-yellow-500/50 transition-all">
+            <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="text-4xl">⏳</span>
+            </div>
+            <small class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.2em]">Aguardando Pagamento</small>
+            <h3 class="text-2xl font-black text-yellow-500 mt-2">{{ aguardando_pagamento }} OS</h3>
+            <div class="w-12 h-1 bg-yellow-500 mt-4 rounded-full"></div>
+        </div>
+        {% endif %}
+
+        <div class="bg-[#24292e] p-6 rounded-2xl border border-gray-800 shadow-xl relative overflow-hidden group hover:border-blue-500/50 transition-all">
+            <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                <span class="text-4xl">🛠️</span>
+            </div>
+            <small class="text-gray-500 font-bold uppercase text-[10px] tracking-[0.2em]">Para Atender</small>
+            <h3 class="text-2xl font-black text-blue-500 mt-2">{{ pendentes_abertos }} OS</h3>
+            <div class="w-12 h-1 bg-blue-500 mt-4 rounded-full"></div>
+        </div>
+
+        <a href="{% url 'dashboard' %}?prioridade=alta" class="group">
+            <div class="bg-red-600 p-6 rounded-2xl shadow-xl shadow-red-900/20 relative overflow-hidden transform hover:-translate-y-1 transition-all h-full">
+                <div class="absolute -right-2 -top-2 p-3 opacity-20 transform rotate-12">
+                    <span class="text-6xl text-white font-black">!</span>
+                </div>
+                <small class="text-red-100 font-bold uppercase text-[10px] tracking-[0.2em]">Urgentes (Alta)</small>
+                <h3 class="text-4xl font-black text-white mt-2">{{ alta }}</h3>
+                <p class="text-red-200 text-xs mt-4 font-bold flex items-center gap-1">VER AGORA <span class="group-hover:translate-x-1 transition-transform">→</span></p>
             </div>
         </a>
-
-        <a href="{% url 'dashboard' %}?prioridade=alta" style="text-decoration: none; color: inherit;">
-            <div style="background: #fff5f5; padding: 20px; border-radius: 10px; border-left: 5px solid #dc3545; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;">
-                <small style="color: #666; font-weight: bold; text-transform: uppercase;">Urgentes (Alta)</small>
-                <h3 style="font-size: 2rem; margin: 10px 0; color: #dc3545;">{{ alta }}</h3>
-            </div>
-        </a>
-
-        <a href="{% url 'dashboard' %}?prioridade=media" style="text-decoration: none; color: inherit;">
-            <div style="background: #fffcf0; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;">
-                <small style="color: #666; font-weight: bold; text-transform: uppercase;">Média Prioridade</small>
-                <h3 style="font-size: 2rem; margin: 10px 0; color: #856404;">{{ media }}</h3>
-            </div>
-        </a>
-
-        <a href="{% url 'dashboard' %}?prioridade=baixa" style="text-decoration: none; color: inherit;">
-            <div style="background: #f0fff4; padding: 20px; border-radius: 10px; border-left: 5px solid #28a745; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s;">
-                <small style="color: #666; font-weight: bold; text-transform: uppercase;">Resolvidos/Baixa</small>
-                <h3 style="font-size: 2rem; margin: 10px 0; color: #28a745;">{{ baixa }}</h3>
-            </div>
-        </a>
-
     </div>
 
-    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        <h3 style="margin-bottom: 20px; color: #444;"> 
-            🚀 {% if filtro_ativo %} Exibindo Prioridade: {{ filtro_ativo|upper }} {% else %} Últimas Atividades {% endif %}
-        </h3>
+    <div class="bg-[#24292e] rounded-2xl shadow-2xl border border-gray-800 overflow-hidden">
+        <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-[#2d333b]">
+            <h3 class="font-bold text-white flex items-center gap-2">
+                🚀 {% if filtro_ativo %} Prioridade: <span class="text-red-500">{{ filtro_ativo|upper }}</span> {% else %} Últimas Atividades {% endif %}
+            </h3>
+        </div>
         
-        <table style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-                <tr style="background: #343a40; color: white;">
-                    <th style="padding: 15px;">Título / Cliente</th>
-                    <th style="padding: 15px;">Prioridade</th>
-                    <th style="padding: 15px;">Status</th>
-                    <th style="padding: 15px;">Responsável</th>
-                    <th style="padding: 15px;">Data</th>
-                    <th style="padding: 15px; text-align: center;">Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for chamado in chamados %}
-                <tr style="border-bottom: 1px solid #eee; transition: background 0.2s;">
-                    <td style="padding: 12px;">
-                        <a href="{% url 'detalhe_chamado' chamado.id %}" style="text-decoration: none; color: #007bff; font-weight: bold;">
-                            {{ chamado.cliente.nome }}
-                        </a><br>
-                        <small style="color: #666;">{{ chamado.descricao|truncatechars:40 }}</small>
-                    </td>
-                    <td style="padding: 12px;">
-                        <span style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase;
-                            {% if chamado.prioridade == 'alta' %} background: #f8d7da; color: #721c24; 
-                            {% elif chamado.prioridade == 'media' %} background: #fff3cd; color: #856404;
-                            {% else %} background: #d4edda; color: #155724; {% endif %}">
-                            {{ chamado.get_prioridade_display }}
-                        </span>
-                    </td>
-                    <td style="padding: 12px;">
-                        <span style="font-weight: 500;">{{ chamado.get_status_display }}</span>
-                    </td>
-                    <td style="padding: 12px; color: #555;">{{ chamado.responsavel.username }}</td>
-                    <td style="padding: 12px; color: #888; font-size: 13px;">{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
-                    <td style="padding: 12px; text-align: center;">
-                        {% if chamado.status == 'aberto' %}
-                            <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" 
-                               style="text-decoration: none; background: #007bff; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                               ▶️ Atender
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-gray-500 text-[10px] uppercase font-black tracking-widest border-b border-gray-800">
+                        <th class="p-5">Título / Cliente</th>
+                        <th class="p-5">Prioridade</th>
+                        <th class="p-5">Status</th>
+                        <th class="p-5">Responsável</th>
+                        <th class="p-5">Data</th>
+                        <th class="p-5 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for chamado in chamados %}
+                    <tr class="hover:bg-[#2d333b]/40 transition-all group">
+                        <td class="p-5">
+                            <a href="{% url 'detalhe_chamado' chamado.id %}" class="text-white font-bold hover:text-red-500 transition-colors">
+                                {{ chamado.cliente.nome }}
                             </a>
-                        {% elif chamado.status == 'atendimento' %}
-                            <a href="{% url 'finalizar_chamado' chamado.id %}" 
-                               style="text-decoration: none; background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                               ✅ Finalizar
-                            </a>
-                        {% else %}
-                            <a href="{% url 'detalhe_chamado' chamado.id %}" style="text-decoration: none; background: #e9ecef; color: #6c757d; padding: 4px 10px; border-radius: 4px; font-size: 12px;">Ver Solução</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" style="padding: 30px; text-align: center; color: #999;">Nenhum chamado encontrado para exibir.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                            <p class="text-gray-500 text-xs mt-1">{{ chamado.descricao|truncatechars:40 }}</p>
+                        </td>
+                        <td class="p-5">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter
+                                {% if chamado.prioridade == 'alta' %} bg-red-600/10 text-red-500 border border-red-500/20 
+                                {% elif chamado.prioridade == 'media' %} bg-yellow-500/10 text-yellow-500 border border-yellow-500/20
+                                {% else %} bg-green-500/10 text-green-500 border border-green-500/20 {% endif %}">
+                                {{ chamado.get_prioridade_display }}
+                            </span>
+                        </td>
+                        <td class="p-5">
+                            {% if chamado.status == 'pago' %}
+                                <div class="flex items-center gap-2 text-green-500 font-bold text-xs"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> PAGO</div>
+                            {% elif chamado.status == 'finalizado' %}
+                                <div class="flex items-center gap-2 text-yellow-500 font-bold text-xs"><span class="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span> AGUARDANDO PGTO</div>
+                            {% elif chamado.status == 'atendimento' %}
+                                <div class="flex items-center gap-2 text-blue-400 font-bold text-xs"><span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span> EM SERVIÇO</div>
+                            {% else %}
+                                <div class="flex items-center gap-2 text-gray-500 font-bold text-xs"><span class="w-2 h-2 bg-gray-500 rounded-full"></span> ABERTO</div>
+                            {% endif %}
+                        </td>
+                        <td class="p-5 text-gray-400 text-sm font-medium">
+                            <span class="flex items-center gap-2 italic">
+                                👤 {{ chamado.responsavel.username|default:"S/ Atribuição" }}
+                            </span>
+                        </td>
+                        <td class="p-5 text-gray-500 text-xs font-mono">{{ chamado.data_criacao|date:"d/m/Y H:i" }}</td>
+                        <td class="p-5 text-center">
+                            {% if chamado.status == 'aberto' %}
+                                <a href="{% url 'mudar_status' chamado.id 'atendimento' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all shadow-lg shadow-blue-900/20">▶️ Atender</a>
+                            {% elif chamado.status == 'atendimento' %}
+                                <a href="{% url 'finalizar_chamado' chamado.id %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all shadow-lg shadow-red-900/20">✅ Finalizar</a>
+                            {% elif chamado.status == 'finalizado' %}
+                                 <span class="text-yellow-500 text-[10px] font-black tracking-widest uppercase italic">Link Enviado</span>
+                            {% else %}
+                                <a href="{% url 'detalhe_chamado' chamado.id %}" class="text-gray-500 hover:text-white transition-colors">Ver Solução</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-20 text-center text-gray-600 font-medium">Nenhum chamado para exibir.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

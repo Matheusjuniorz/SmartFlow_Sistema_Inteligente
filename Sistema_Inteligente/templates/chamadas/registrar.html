@@ -1,25 +1,79 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastro de Responsável</title>
-    <style>
-        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
-        .register-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { text-align: center; color: #333; }
-        .btn-registrar { width: 100%; background-color: #28a745; color: white; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        .login-link { display: block; text-align: center; margin-top: 15px; color: #007bff; text-decoration: none; }
-    </style>
-</head>
-<body>
-    <div class="register-container">
-        <h2>Novo Responsável</h2>
-        <form method="POST">
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-[#1a1d21] flex justify-center items-center p-6">
+    <div class="bg-[#24292e] w-full max-w-md rounded-2xl shadow-2xl border border-gray-800 p-8 relative overflow-hidden">
+        
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-red-600/10 rounded-full blur-[80px]"></div>
+
+        <div class="text-center mb-10 relative">
+            <div class="inline-block p-3 bg-red-600 rounded-xl mb-4 shadow-lg shadow-red-900/40">
+                <span class="text-2xl text-white">👤</span>
+            </div>
+            <h2 class="text-3xl font-black text-white tracking-tighter uppercase">Novo Responsável</h2>
+            <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-2">Acesso ao Sistema de Comando</p>
+        </div>
+
+        <form method="POST" class="space-y-4">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn-registrar">Criar Conta</button>
+            
+            {% if form.errors %}
+                <div class="bg-red-900/20 border-l-4 border-red-600 p-4 rounded-lg mb-6">
+                    <p class="text-red-500 text-xs font-bold italic">⚠️ Erro no cadastro. Verifique os dados.</p>
+                </div>
+            {% endif %}
+
+            <div class="django-form-style">
+                {{ form.as_p }}
+            </div>
+
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg shadow-red-900/40 transition-all transform active:scale-95 uppercase tracking-widest text-sm mt-6">
+                Criar Conta
+            </button>
         </form>
-        <a href="{% url 'two_factor:login' %}" class="login-link">Já tenho conta (Fazer Login)</a>
+
+        <div class="mt-8 text-center pt-6 border-t border-gray-800">
+            <a href="{% url 'two_factor:login' %}" class="text-gray-500 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors">
+                Já tenho conta? <span class="text-red-500 underline ml-1">Fazer Login</span>
+            </a>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    .django-form-style p {
+        margin-bottom: 1rem;
+    }
+    .django-form-style label {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.4rem;
+        color: #9ca3af;
+    }
+    .django-form-style input {
+        width: 100%;
+        background-color: #1a1d21;
+        border: 1px solid #374151;
+        color: white;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        outline: none;
+        transition: all 0.2s;
+    }
+    .django-form-style input:focus {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+    }
+    /* Estilização para o texto de ajuda (senhas geralmente tem isso) */
+    .django-form-style .helptext {
+        display: block;
+        font-size: 0.65rem;
+        color: #4b5563;
+        margin-top: 0.3rem;
+        line-height: 1.4;
+    }
+</style>
+{% endblock %}

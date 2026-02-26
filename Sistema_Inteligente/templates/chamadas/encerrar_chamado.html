@@ -1,27 +1,55 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="max-width: 600px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); font-family: sans-serif;">
-    <h2 style="color: #333; border-bottom: 2px solid #28a745; padding-bottom: 10px;">✅ Finalizar Chamado #{{ chamado.id }}</h2>
-    
-    <div style="margin: 20px 0; color: #666;">
-        <p><strong>Cliente:</strong> {{ chamado.cliente.nome }}</p>
-        <p><strong>Descrição original:</strong> {{ chamado.descricao }}</p>
-    </div>
-
-    <form method="POST">
-        {% csrf_token %}
-        <label style="font-weight: bold; display: block; margin-bottom: 10px;">Solução Técnica aplicada:</label>
-        <textarea name="solucao" rows="6" style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;" placeholder="Descreva detalhadamente o que foi feito..." required></textarea>
+<div class="min-h-screen bg-[#1a1d21] flex justify-center items-center p-6">
+    <div class="bg-[#24292e] w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-800 p-8 relative overflow-hidden">
         
-        <div style="margin-top: 25px; display: flex; gap: 10px;">
-            <button type="submit" style="background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; cursor: pointer; flex: 1;">
-                Gravar e Encerrar
-            </button>
-            <a href="{% url 'dashboard' %}" style="text-decoration: none; background: #6c757d; color: white; padding: 12px 25px; border-radius: 5px; font-weight: bold; text-align: center; flex: 1;">
-                Cancelar
-            </a>
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-red-600/5 rounded-full blur-3xl"></div>
+
+        <div class="mb-8 relative">
+            <h2 class="text-2xl font-black text-white flex items-center gap-3">
+                <span class="text-red-600 text-3xl">✓</span>
+                Finalizar Chamado <span class="text-gray-600 ml-1">#{{ chamado.id }}</span>
+            </h2>
+            <div class="h-1 w-20 bg-red-600 mt-2 rounded-full"></div>
         </div>
-    </form>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-[#1a1d21] p-5 rounded-xl border border-gray-800">
+            <div>
+                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Cliente Atendido</p>
+                <p class="text-white font-bold">{{ chamado.cliente.nome }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Problema Reportado</p>
+                <p class="text-gray-400 text-sm italic">"{{ chamado.descricao|truncatechars:60 }}"</p>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="group">
+                <label class="block text-gray-400 text-xs font-black uppercase tracking-[0.2em] mb-3 group-focus-within:text-red-500 transition-colors">
+                    Relatório Técnico da Solução Aplicada:
+                </label>
+                <textarea name="solucao" rows="8" required
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white p-5 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder-gray-600 text-lg leading-relaxed"
+                    placeholder="Descreva detalhadamente as peças trocadas, testes feitos e o resultado final..."></textarea>
+                <p class="text-gray-500 text-[10px] mt-2 italic">* Este texto constará no recibo enviado ao cliente.</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 mt-10">
+                <button type="submit" 
+                    class="flex-[2] bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg shadow-red-900/30 transition-all transform active:scale-95 uppercase tracking-widest text-sm flex items-center justify-center gap-2">
+                    <span>💾</span> Gravar e Encerrar OS
+                </button>
+                
+                <a href="{% url 'dashboard' %}" 
+                    class="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white font-bold py-4 rounded-xl text-center transition-all uppercase tracking-widest text-xs flex items-center justify-center">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

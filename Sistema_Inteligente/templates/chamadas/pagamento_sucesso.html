@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="min-h-screen bg-[#1a1d21] flex justify-center items-center p-6 font-sans">
+    
+    <div class="bg-[#24292e] w-full max-w-md rounded-3xl shadow-2xl border border-gray-800 p-10 text-center relative overflow-hidden">
+        
+        <div class="absolute -top-20 -left-20 w-40 h-40 bg-green-500/10 rounded-full blur-[80px]"></div>
+        <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-red-600/5 rounded-full blur-[80px]"></div>
+
+        <div class="relative mb-8">
+            <div class="w-24 h-24 bg-green-500/10 border border-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-900/20">
+                <span class="text-5xl animate-bounce">✅</span>
+            </div>
+            <div class="h-1 w-12 bg-green-500 mx-auto rounded-full"></div>
+        </div>
+
+        <h1 class="text-3xl font-black text-white mb-4 tracking-tighter">Muito Obrigado!</h1>
+        
+        <div class="space-y-4 mb-10">
+            <p class="text-gray-400 leading-relaxed">
+                Seu pagamento foi <span class="text-green-500 font-bold uppercase text-xs tracking-widest bg-green-500/10 px-2 py-1 rounded">Processado</span> com sucesso.
+            </p>
+            <p class="text-gray-500 text-sm italic">
+                O comprovante oficial e a nota do serviço foram enviados para o seu e-mail registrado.
+            </p>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8">
+            <p class="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em] mb-6">Equipe SmartFlow</p>
+            
+            <a href="/" class="group flex items-center justify-center gap-2 bg-white hover:bg-red-600 text-black hover:text-white font-black py-4 px-8 rounded-2xl transition-all shadow-xl shadow-white/5 transform active:scale-95 uppercase text-xs tracking-widest">
+                Voltar para o Início
+                <span class="group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

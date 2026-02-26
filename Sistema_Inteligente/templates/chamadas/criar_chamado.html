@@ -1,63 +1,80 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Novo Chamado - SmartFlow</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding: 40px; }
-        .card { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
-        h2 { color: #333; border-bottom: 2px solid #ffc107; padding-bottom: 10px; }
-        .field { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        select, input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        .btn-ready { background: #28a745; color: white; border: none; padding: 15px; width: 100%; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
-        .btn-ready:hover { background: #218838; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-<div class="card">
-    <h2>➕ Abrir Novo Chamado</h2>
-    
-    <form method="POST" action="{% url 'criar_chamado' %}">
-        {% csrf_token %}
-
-        <div class="field">
-            <label>Cliente:</label>
-            <select name="cliente" required>
-                <option value="">-- Selecione o Cliente --</option>
-                {% for cliente in clientes %}
-                    <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="field">
-            <label>Título / Assunto Curto:</label>
-            <input type="text" name="titulo" placeholder="Ex: Reparo de Impressora" required>
-        </div>
-
-        <div class="field">
-            <label>Descrição do Problema:</label>
-            <textarea name="descricao" rows="5" placeholder="Detalhe o defeito aqui..." required></textarea>
-        </div>
-
-        <div class="field">
-            <label>Prioridade:</label>
-            <select name="prioridade">
-                <option value="baixa">Baixa</option>
-                <option value="media" selected>Média</option>
-                <option value="alta">Alta</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-ready">REGISTRAR CHAMADO AGORA</button>
+{% block content %}
+<div class="min-h-screen bg-[#1a1d21] flex justify-center items-center p-6">
+    <div class="bg-[#24292e] w-full max-w-lg rounded-2xl shadow-2xl border border-gray-800 p-8">
         
-        <div style="text-align: center; margin-top: 15px;">
-            <a href="{% url 'lista_chamados' %}" style="color: #666; text-decoration: none;">Voltar para a lista</a>
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white flex items-center gap-3">
+                <span class="p-2 bg-red-600 rounded-lg text-white">➕</span>
+                Abrir Novo Chamado
+            </h2>
+            <div class="h-1 w-20 bg-red-600 mt-2 rounded-full"></div>
+            <p class="text-gray-400 text-sm mt-3">Preencha os dados abaixo para iniciar a ordem de serviço.</p>
         </div>
-    </form>
-</div>
 
-</body>
-</html>
+        {% if form.errors %}
+            <div class="bg-red-900/20 border border-red-900/50 text-red-400 p-4 rounded-xl mb-6 text-sm">
+                <strong class="block mb-1 font-bold">⚠️ Erro ao salvar:</strong>
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'criar_chamado' %}" class="space-y-5">
+            {% csrf_token %}
+
+            <div class="group">
+                <label class="block text-gray-400 text-xs font-black uppercase tracking-widest mb-2 group-focus-within:text-red-500 transition-colors">Cliente</label>
+                <select name="cliente" required 
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all appearance-none cursor-pointer">
+                    <option value="" class="text-gray-500">-- Selecione o Cliente --</option>
+                    {% for cliente in clientes %}
+                        <option value="{{ cliente.id }}">{{ cliente.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="group">
+                <label class="block text-gray-400 text-xs font-black uppercase tracking-widest mb-2 group-focus-within:text-red-500 transition-colors">Título / Assunto Curto</label>
+                <input type="text" name="titulo" placeholder="Ex: Reparo de Impressora" required
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder-gray-600">
+            </div>
+
+            <div class="group">
+                <label class="block text-gray-400 text-xs font-black uppercase tracking-widest mb-2 group-focus-within:text-red-500 transition-colors">Descrição do Problema</label>
+                <textarea name="descricao" rows="4" placeholder="Detalhe o defeito aqui..." required
+                    class="w-full bg-[#1a1d21] border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder-gray-600"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="group">
+                    <label class="block text-gray-400 text-xs font-black uppercase tracking-widest mb-2 group-focus-within:text-red-500 transition-colors">Prioridade</label>
+                    <select name="prioridade" 
+                        class="w-full bg-[#1a1d21] border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 appearance-none cursor-pointer transition-all">
+                        <option value="baixa">Baixa</option>
+                        <option value="media" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+
+                <div class="group">
+                    <label class="block text-gray-400 text-xs font-black uppercase tracking-widest mb-2 group-focus-within:text-red-500 transition-colors">Valor (R$)</label>
+                    <input type="number" name="valor" step="0.01" min="1.00" placeholder="0.00" required
+                        class="w-full bg-[#1a1d21] border border-gray-700 text-white px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-transparent transition-all placeholder-gray-600">
+                </div>
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg shadow-red-900/30 transition-all transform active:scale-95 uppercase tracking-widest text-sm">
+                REGISTRAR CHAMADO AGORA
+            </button>
+            
+            <div class="text-center mt-6">
+                <a href="{% url 'lista_chamados' %}" class="text-gray-500 hover:text-white text-sm transition-colors">
+                    ← Cancelar e voltar para a lista
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

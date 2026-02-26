@@ -9,9 +9,10 @@ class ClienteForm(forms.ModelForm):
 class ChamadoForm(forms.ModelForm):
     class Meta:
         model = Chamado
-        fields = ['cliente', 'titulo', 'descricao', 'prioridade', 'responsavel']
+        fields = ['cliente', 'titulo', 'descricao', 'prioridade', 'responsavel', 'valor', 'responsavel']
         
         widgets = {
+            'valor': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': '0.00'}),
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descricao': forms.Textarea(attrs={'class': 'form-control'}),

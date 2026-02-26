@@ -20,6 +20,7 @@ class Chamado(models.Model):
         ('aberto', 'Aberto'),
         ('atendimento', 'Em Atendimento'),
         ('finalizado', 'Finalizado'),
+        ('pago', 'Pago'), # <--- ADICIONADO: Essencial para o faturamento da Dashboard
         ('cancelado', 'Cancelado'),
     ]
 
@@ -32,7 +33,15 @@ class Chamado(models.Model):
 
     titulo = models.CharField(max_length=200, verbose_name="Título")
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Cliente")
-    responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Responsável")
+    
+    # Campo de atribuição profissional
+    responsavel = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        verbose_name="Responsável"
+    )
     
     descricao = models.TextField(verbose_name="Descrição do Problema", default="") 
     solucao = models.TextField(blank=True, null=True, verbose_name="Solução") 
@@ -41,7 +50,7 @@ class Chamado(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='aberto')
 
     data_criacao = models.DateTimeField(auto_now_add=True)
-    ultima_alteracao = models.DateTimeField(auto_now=True) # Mantive este que é útil
+    ultima_alteracao = models.DateTimeField(auto_now=True)
     data_finalizacao = models.DateTimeField(blank=True, null=True)
 
     valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
