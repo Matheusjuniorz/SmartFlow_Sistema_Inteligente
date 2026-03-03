@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>SmartFlow | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#020617] min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-gray-900/80 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-gray-800">
+        
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-black text-white tracking-tighter">
+                SMART<span class="text-red-600">FLOW</span>
+            </h1>
+            <p class="text-gray-400 text-sm mt-2 font-medium">Autenticação Segura</p>
+        </div>
+
+        {% if wizard.steps.current == 'auth' %}
+            <p class="text-gray-300 mb-6 text-center text-sm">Insira suas credenciais abaixo</p>
+        {% elif wizard.steps.current == 'token' %}
+            <p class="text-red-500 mb-6 text-center text-sm font-bold">Insira o código do seu autenticador</p>
+        {% endif %}
+
+        <form action="" method="post" class="space-y-6">
+            {% csrf_token %}
+            {{ wizard.management_form }}
+            
+            <div class="space-y-4 text-white">
+                {% if wizard.form.non_field_errors %}
+                    <div class="bg-red-600/20 border border-red-600 p-3 rounded-lg text-red-400 text-xs text-center">
+                        {{ wizard.form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                {% for field in wizard.form %}
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 ml-1">{{ field.label }}</label>
+                        <div class="relative">
+                            {# Aqui o Django injeta o input, vamos forçar classes via CSS no final se necessário #}
+                            {{ field }}
+                        </div>
+                        {% if field.errors %}
+                            <p class="text-red-500 text-[10px] mt-1">{{ field.errors }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-900/40 transform active:scale-95">
+                Próximo Passo
+            </button>
+        </form>
+
+        <p class="mt-8 text-center text-gray-500 text-xs">
+            &copy; 2026 SmartFlow Tech
+        </p>
+    </div>
+
+    <style>
+        /* Isso garante que os inputs que o Django gera fiquem bonitos */
+        input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background-color: rgba(31, 41, 55, 0.5);
+            border: 1px solid #374151;
+            border-radius: 1rem;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
+        }
+    </style>
+</body>
+</html>

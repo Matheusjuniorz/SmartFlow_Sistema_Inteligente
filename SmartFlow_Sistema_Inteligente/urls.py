@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from Sistema_Inteligente import views 
 from django.contrib.auth.views import LogoutView 
 from two_factor.views import (
@@ -40,6 +41,10 @@ auth_patterns = [
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    #login
+    path('login/', LoginView.as_view(template_name='two_factor/core/login.html'), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     
     # 2. Autenticação Two-Factor
     path('account/', include((auth_patterns, 'two_factor'), namespace='two_factor')),
@@ -74,6 +79,7 @@ urlpatterns = [
 
     # Usuários
     path('registrar/', views.registrar_responsavel, name='registrar_responsavel'),
+        
 ]
 
 if settings.DEBUG:
