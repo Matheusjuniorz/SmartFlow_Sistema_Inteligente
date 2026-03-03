@@ -85,13 +85,3 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes
 Desenvolvido por Matheus 🚀
 
 
----
-
-### 💡 Dicas extras para o seu README:
-
-* **Screenshots:** Onde eu coloquei os marcadores de imagem `[Image of...]`, recomendo que você tire um print da sua tela de login nova e do seu dashboard, salve em uma pasta chamada `/screenshots` no projeto e substitua o link no texto.
-* **Requirements:** Não esqueça de gerar o arquivo de dependências para quem for baixar seu projeto, usando o comando:
-    `pip freeze > requirements.txt`
-* **Seção de Contato:** Se for colocar no portfólio, adicione seu LinkedIn no final!
-
-**Gostaria que eu criasse também o arquivo `LICENSE` para o seu repositório ficar 100% completo?**
